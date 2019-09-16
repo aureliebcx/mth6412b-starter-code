@@ -29,4 +29,6 @@ data(node::AbstractNode) = node.data
 """Affiche un noeud."""
 function show(node::AbstractNode)
   println("Node ", name(node), ", data: ", data(node))
+  """ test changement branche locale """
+  
 end
