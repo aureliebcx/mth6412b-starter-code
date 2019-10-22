@@ -47,10 +47,10 @@ end
 function getRacine(arbre::AbstractGraph{T}, noeud::AbstractNode{T}) where T
   enfant = noeud
   parent = getParent(arbre, noeud)
-
   while enfant != parent
     enfant = parent
     parent = getParent(arbre, parent)
   end
-  return enfant
+
+  return enfant, enfant.rang
 end

@@ -7,18 +7,31 @@ abstract type AbstractNode{T} end
 
 Exemple:
 
-        noeud = Node(1, [π, exp(1)])
-        noeud = Node(2, "guitar")
-        noeud = Node(3, 2)
+        noeud = Node(1, [π, exp(1)], 0)
+        noeud = Node(2, "guitar", 0)
+        noeud = Node(3, 2, 0)
 
 """
 mutable struct Node{T} <: AbstractNode{T}
   name::Int
   data::T
+  rang::Int
+  minWeight::Int
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
 # posséderont des champs `name` et `data`.
+
+"""Implémente un noeud avec un rang nul."""
+function Node(name::Int, data::T) where T
+  Node(name, data, 0, 0)
+end
+
+"""Renvoie le poids minimal associé au noeud."""
+minWeight(node::AbstractNode) = node.minWeight
+
+"""Renvoie le rang du noeud."""
+rang(node::AbstractNode) = node.rang
 
 """Renvoie le nom du noeud."""
 name(node::AbstractNode) = node.name
