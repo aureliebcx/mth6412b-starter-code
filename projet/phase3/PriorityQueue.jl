@@ -1,9 +1,10 @@
 import Base.show
 import Base.popfirst!
+import Base.push!
 import Base.sort!
 
 """Type abstrait dont d'autres files vont découler."""
-abstract type AbstractPriorityQueue{T} end
+abstract type AbstractQueue end
 
 """ Type représentant une file de priorité ordonnée par le poids minimal des noeuds.
 
@@ -23,30 +24,42 @@ Exemple :
 
     queue = (Array[(node1, 1)(node2, nothing), (node3, nothing)]
 """
-mutable struct PriorityQueue{T} <: AbstractPriorityQueue{T}
-  nodes::Array{Any, 2}
-end
-
-
-function PriorityQueue(queue::Array{Any, 2})
-  sort!(queue, by = x -> x[1].minWeight )
-  PriorityQueue(queue)
+mutable struct PriorityQueue <: AbstractQueue
+  nodes::Vector{Node}
 end
 
 """Renvoie le tableau de noeuds de la file de priorité."""
-isolatedNodes(queue::AbstractPriorityQueue) = queue.nodes
+getNodes(queue::AbstractQueue) = queue.nodes
 
 """Constructeur de file de priorité vide."""
-PriorityQueue() = PriorityQueue(Array{Any}(undef ,0,2))
+PriorityQueue()= PriorityQueue(Array())
 
 """Ajoute un noeud dans la file de priorité."""
-function push!(queue::PriorityQueue{T}, node::AbstractNode{T}, edge::AbstractEdge{T}) where T
-  queue.nodes = vcat(queue.nodes, [node, edge])
-  sort!(queue.nodes, by = x -> x[1].minWeight)
+#push!(queue::PriorityQueue, node::AbstractNode)  = push!(queue.nodes, node)
+function push!(queue::PriorityQueue, node::AbstractNode
+  a =Array{Node, 1}(node)
+  queue.nodes = cat(queue.nodes, a)
 end
 
 """Renvoie le premier élément de la file de priorité."""
-popfirst!(queue::PriorityQueue) = popfirst!(queue.nodes)
+function popfirst!(queue::PriorityQueue)
+  nodes = getNodes(queue)
+  index = nothing
+  if(length(nodes) == 0)
+    return nothing
+  else
+    minWeight = minWeight(nodes[1])
+    index = 1
+    if(length(nodes) > 1)
+      for i in 2:length(nodes)
+        temp = minWeight(nodes[i])
+        if(temp <= minWeight)
+          minWeight = temp
+          index = i
+        end
+      end
+    end
+    return deleteat!(queue.nodes, index)
+  end
 
-"""Réordonne les noeuds de la file d'attente par poids minimal."""
-sort!(queue::PriorityQueue) = sort!(queue.nodes, by = x -> x[1].minWeight)
+end

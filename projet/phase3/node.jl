@@ -1,5 +1,5 @@
 import Base.show
-
+import Base.Inf
 """Type abstrait dont d'autres types de noeuds dériveront."""
 abstract type AbstractNode{T} end
 
@@ -16,7 +16,8 @@ mutable struct Node{T} <: AbstractNode{T}
   name::Int
   data::T
   rang::Int
-  minWeight::Int
+  minWeight::Union{Float64, Int}
+  parent::Union{Nothing, AbstractNode{}}
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
@@ -24,7 +25,7 @@ end
 
 """Implémente un noeud avec un rang nul."""
 function Node(name::Int, data::T) where T
-  Node(name, data, 0, 0)
+  Node(name, data, 0, Inf, nothing)
 end
 
 """Renvoie le poids minimal associé au noeud."""
@@ -39,7 +40,23 @@ name(node::AbstractNode) = node.name
 """Renvoie les données contenues dans le noeud."""
 data(node::AbstractNode) = node.data
 
+"""Renvoie le parent du noeud."""
+getParent(node::AbstractNode) = node.parent
+
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  println("Node ", name(node), ", data: ", data(node))
+  if(getParent(node) == nothing)
+    println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node))
+  else
+    println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node), ", parent: ", name(getParent(node)))
+  end
 end
+
+"""Modifie le poids minimum et le parent associé au noeud."""
+function setWeight(node::AbstractNode, weight::Int, parent::AbstractNode)
+  node.minWeight = weight
+  node.parent = parent
+end
+
+"""Retourne si un noeud est égal à l'autre."""
+isequal(node1::AbstractNode, node2::AbstractNode) = node1==node2

@@ -1,4 +1,5 @@
 import Base.show
+import Base.push!
 include(joinpath(@__DIR__,"..", "phase1","graph.jl"))
 
 
@@ -53,4 +54,18 @@ function getRacine(arbre::AbstractGraph{T}, noeud::AbstractNode{T}) where T
   end
 
   return enfant, enfant.rang
+end
+
+
+"""Affiche un arbre de recouvrement minimal."""
+function show(arbre::Arbre)
+  for key in keys(arbre.link)
+    if(key != nothing)
+      show(key)
+    end
+  end
+
+  for edge in arbre.edges
+    show(edge)
+  end
 end
