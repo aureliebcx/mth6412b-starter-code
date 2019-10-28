@@ -11,6 +11,7 @@ Exemple :
 
     arbre = ([node4], Dict(node1 => [edge1, edge3], node2 => [edge1, edge2], node3 => [edge2, edge3]), 3)
 """
+
 mutable struct Prim{T} <: AbstractGraph{T}
   queue::PriorityQueue{Node{T}}
   nodes::Dict{Node{T}, Vector{Edge{T}}}

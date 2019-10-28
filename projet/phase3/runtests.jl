@@ -5,10 +5,8 @@ include(joinpath(@__DIR__, "..", "phase1", "edge.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "graph.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "read_stsp.jl"))
 include(joinpath(@__DIR__, "..", "phase2", "arbreRecouvrement.jl"))
-
-include(joinpath(@__DIR__, "kruskal.jl"))
 include(joinpath(@__DIR__, "queue.jl"))
-include(joinpath(@__DIR__, "prim.jl"))
+include(joinpath(@__DIR__, "main.jl"))
 
 @testset "Compression" begin
     node1 = Node(1,2)
@@ -35,6 +33,12 @@ end
     edge2 = Edge(node2, node3, 1)
     edge4 = Edge(node1, node4, 1)
     arbre = Arbre("test", Dict(node3 => node3, node1 => node1, node2 => node3, node4 => node4), [edge2])
+
+    # Test si elles ont la même racine
+
+    # Test si racine1 est plus petite que racine2
+
+    # Test si racine2 est plus petite ou égale que racine1
 
 end
 
@@ -72,12 +76,21 @@ end
     file = PriorityQueue([node2, node3, node4])
     edges1 = [edge3, edge4]
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
-    # Test initGraphPrim
 
+    # Test initGraphPrim
     prim =  initGraphPrim(graphe)
-    # penser à test qui marche pour tout @test getNodes(prim) == [node2, node1, node3, node4]
-    @test length(getEdges(prim)) == 0
+    # Tous les noeuds sont présents dans le dictionnaire de noeuds du graphe.
+    @test length(getNodes(prim)) == 4
+    t = [node2, node1, node3, node4]
+    for node in getNodes(prim)
+        @test findall(x -> x == node, t) != nothing
+    end
+
+    # Les arêtes associées à un noeud sont présentes dans le dictionnaire
     @test getEdgesOfNode(prim, node1) == [edge3, edge4]
+
+    # Il n'y a pas encore d'arêtes dans l'arbre de recouvrement minimal
+    @test length(getEdges(prim)) == 0
 
     # test majPoidsNoeud!
     file = getNodes(getQueue(prim))
@@ -95,7 +108,7 @@ end
 
 end
 
-@testset "prim.jl" begin
+@testset "prim" begin
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -105,9 +118,70 @@ end
     edge3 = Edge(node1, node3, 3)
     edge4 = Edge(node1, node4, 1)
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
-    arbre = prim(graphe, node1)
+
+    # Test de la fonction prim
+    arbre = prim(graphe)
     @test getWeight(arbre) == 4
-    @test getEdges(arbre) == [edge4, edge1, edge2]
+
+    # Toutes les arêtes de l'arbre de recouvrement minimal sont présentes.
+    @test length(getEdges(arbre)) == 3
+    t = [edge4, edge1, edge2]
+    for edge in getEdges(arbre)
+        @test findall(x -> x == edge, t) != nothing
+    end
+
+    # Il ne reste plus de noeuds à ajouter.
     @test length(getQueue(arbre)) == 0
+
+end
+
+@testset "exemple cours" begin
+    # Test sur l'arbre vu en cours
+    # Construction des noeuds
+    node1 = Node(1, "a")
+    node2 = Node(2, "b")
+    node3 = Node(3, "C")
+    node4 = Node(4, "d")
+    node5 = Node(5, "e")
+    node6 = Node(6, "f")
+    node7 = Node(7, "g")
+    node8 = Node(8, "h")
+    node9 = Node(9, "i")
+    nodes = [node1, node2, node3, node4, node5, node6, node7, node8, node9]
+
+    # Construction des arêtes
+    edge1 = Edge(node1, node2, 4)
+    edge2 = Edge(node1, node8, 8)
+    edge3 = Edge(node2, node3, 8)
+    edge4 = Edge(node2, node8, 11)
+    edge5 = Edge(node3, node9, 2)
+    edge6 = Edge(node3, node6, 4)
+    edge7 = Edge(node3, node4, 7)
+    edge8 = Edge(node4, node5, 9)
+    edge9 = Edge(node4, node6, 14)
+    edge10 = Edge(node5, node6, 10)
+    edge11 = Edge(node7, node9, 6)
+    edge12 = Edge(node7, node8, 1)
+    edge13 = Edge(node8, node9, 7)
+    edge14 = Edge(node6, node7, 2)
+    edges = [edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8, edge9, edge10, edge11, edge12, edge13, edge14]
+
+    grapheCours = Graph("cours", nodes, edges)
+    grapheKruskal = kruskal(grapheCours)
+    t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
+    @test length(getEdges(grapheKruskal)) == 8
+    for edge in getEdges(grapheKruskal)
+        @test findall(x -> x == edge, t) != nothing
+    end
+
+
+    graphePrim = prim(grapheCours)
+    @test getWeight(graphePrim) == 37
+    t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
+    @test length(getEdges(graphePrim)) == 8
+    for edge in getEdges(graphePrim)
+        @test findall(x -> x == edge, t) != nothing
+    end
+
 
 end

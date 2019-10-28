@@ -12,7 +12,7 @@ Exemple :
     edge2 = Edge(node2, node3, 2)
     edge3 = Edge(node1, node3, 1)
 
-    arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge1, edge2, edge3]
+    arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge2, edge3])
 """
 mutable struct Arbre{T} <: AbstractGraph{T}
   name::String
@@ -20,11 +20,14 @@ mutable struct Arbre{T} <: AbstractGraph{T}
   edges::Vector{Edge{T}}
 end
 
-"""Change le parent d'un noeud"""
+"""Change le parent d'un noeud. """
 function changeParent!(tabParents::Arbre, nodeChild::AbstractNode, nodeFather::AbstractNode)
   tabParents.link[nodeChild] = nodeFather
   return tabParents
 end
+
+"""Renvoie les arêtes de l'arbre."""
+getEdges(arbre::Arbre) = arbre.edges
 
 """Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
 getParents(graphe::Arbre) = graphe.link
@@ -68,4 +71,5 @@ function show(arbre::Arbre)
   for edge in arbre.edges
     show(edge)
   end
+
 end

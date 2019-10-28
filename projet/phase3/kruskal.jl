@@ -1,25 +1,3 @@
-include(joinpath(@__DIR__, "..", "phase3", "node.jl"))
-include(joinpath(@__DIR__, "..", "phase1", "edge.jl"))
-include(joinpath(@__DIR__, "..", "phase1", "graph.jl"))
-include(joinpath(@__DIR__, "..", "phase2", "arbreRecouvrement.jl"))
-
-"""Retourne un arbre de recouvrement minimal pour un graphe non orienté connexe"""
-function algoKruskal(graph::AbstractGraph)
-  # on crée un objet de type Arbre pour le graphe
-  foret = initArbre(graph)
-
-  # on crée un tableau avec toutes les arêtes du graphe triées par poids
-  aretes = copy(edges(graph))
-  sort!(aretes, by = x -> x.weight)
-
-  # pour chaque arête, on regarde si elle coupe un ensemble connexe cad si ses deux noeuds ont une racine différente
-  for arete in aretes
-    union!(arete, foret)
-  end
-  return foret
-
-end
-
 """Union de deux noeuds selon le rang de leur racine si elles n'ont pas le même noeud."""
 function union!(arete::Edge, foret::Arbre)
   racine1, rang1 = getRacine(foret, getNode1(arete))
