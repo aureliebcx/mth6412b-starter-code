@@ -53,7 +53,7 @@ function show(node::AbstractNode)
 end
 
 """Modifie le poids minimum et le parent associé au noeud."""
-function setWeight(node::AbstractNode, weight::Int, parent::AbstractNode)
+function setWeight(node::AbstractNode, weight::Union{Float64, Int}, parent::Union{AbstractNode, Nothing})
   node.minWeight = weight
   node.parent = parent
 end

@@ -131,7 +131,7 @@ end
     end
 
     # Il ne reste plus de noeuds à ajouter.
-    @test length(getQueue(arbre)) == 0
+    @test is_empty(getQueue(arbre))
 
 end
 

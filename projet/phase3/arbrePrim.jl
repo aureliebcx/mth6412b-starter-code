@@ -24,12 +24,17 @@ initPrim(queue::PriorityQueue{Node{T}}, dict::Dict{Node{T}, Vector{Edge{T}}}) wh
 
 """Initialise un arbre vide avec une file d'attente avec tous les noeuds du graphe et un poids nul."""
 function initGraphPrim(graphe::AbstractGraph{T}) where T
-    # Donne toutes les arêtes à partir d'un noeud{T
+    graphe_copy = deepcopy(graphe)
+    # Donne toutes les arêtes à partir d'un noeud
+    nodes = graphe_copy.nodes
+    edges = graphe_copy.edges
     dic = Dict{Node{T}, Vector{Edge{T}}}()
-    for node in graphe.nodes
+    for node in nodes
+        setWeight(node, Inf, nothing)
+        show(node)
         dic[node] = []
     end
-    for edge in graphe.edges
+    for edge in edges
         push!(dic[getNode1(edge)], edge)
         push!(dic[getNode2(edge)], edge)
     end
@@ -65,6 +70,7 @@ function add_edge!(arbre::Prim{T}, noeud::AbstractNode{T}) where T
     if(index == nothing)
         index = findfirst(x  -> isequal(parent, getNode2(x)), edges)
     end
+    show(edges[index])
     push!(arbre.edges, edges[index])
     arbre.weight = arbre.weight + minWeight(noeud)
     return arbre

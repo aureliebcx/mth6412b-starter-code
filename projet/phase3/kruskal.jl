@@ -1,5 +1,5 @@
 """Union de deux noeuds selon le rang de leur racine si elles n'ont pas le même noeud."""
-function union!(arete::Edge, foret::Arbre)
+function union!(arete::Edge, foret::Arbre, poids)
   racine1, rang1 = getRacine(foret, getNode1(arete))
   racine2, rang2 = getRacine(foret, getNode2(arete))
   # si oui, on relie les deux ensembles connexes par leurs racines
@@ -17,7 +17,9 @@ function union!(arete::Edge, foret::Arbre)
     end
     # On ajoute l'arête à l'arbre
     add_edge!(foret, arete)
+    poids = poids + weight(arete)
   end
+  return poids
 end
 
 """

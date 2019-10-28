@@ -17,6 +17,9 @@ popfirst!(q::AbstractQueue) = popfirst!(q.nodes)
 """Indique si la file est vide."""
 is_empty(q::AbstractQueue) = length(q.nodes) == 0
 
+"""Renvoie les noeuds contenus dans la file de priorité."""
+getNodes(queue::AbstractQueue) = queue.nodes
+
 """Donne le nombre d'éléments sur la file."""
 length(q::AbstractQueue) = length(q.nodes)
 
@@ -29,9 +32,6 @@ mutable struct PriorityQueue{T} <: AbstractQueue{T}
 end
 
 PriorityQueue{T}() where T = PriorityQueue(T[])
-
-"""Renvoie les noeuds contenus dans la file de priorité."""
-getNodes(queue::AbstractQueue) = queue.nodes
 
 """Retire et renvoie l'élément ayant la plus haute priorité."""
 function popfirst!(queue::PriorityQueue)
@@ -55,7 +55,3 @@ function popfirst!(queue::PriorityQueue)
     return highest
   end
 end
-
-import Base.maximum
-
-maximum(q::AbstractQueue) = maximum(q.nodes)
