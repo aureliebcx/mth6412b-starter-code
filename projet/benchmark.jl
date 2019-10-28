@@ -1,7 +1,7 @@
 using Statistics
 using Printf
 
-include(joinpath(@__DIR__, "phase2", "main.jl"))
+include(joinpath(@__DIR__, "phase3", "main.jl"))
 
 # List of stsp instances
 const STSP_DIR = joinpath(@__DIR__, "..", "instances", "stsp")
@@ -17,7 +17,7 @@ Run Kruskal's algorithm on each graph `g ∈ graphs`.
 """
 function benchmark_kruskal(graphs)
     for g in graphs
-        mst = algoKruskal(g)
+        mst = kruskal(g)
     end
     return nothing
 end

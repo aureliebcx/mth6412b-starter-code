@@ -4,6 +4,13 @@ import Base.show
 """Type abstrait dont d'autres types de files dériveront."""
 abstract type AbstractQueue{T} end
 
+"""File de priorité."""
+mutable struct PriorityQueue{T} <: AbstractQueue{T}
+    nodes::Vector{T}
+end
+
+"""Implémente une file vide."""
+PriorityQueue{T}() where T = PriorityQueue(T[])
 
 """Ajoute `item` à la fin de la file `s`."""
 function push!(q::AbstractQueue{T}, item::T) where T
@@ -26,32 +33,26 @@ length(q::AbstractQueue) = length(q.nodes)
 """Affiche une file."""
 show(q::AbstractQueue) = show(q.nodes)
 
-"""File de priorité."""
-mutable struct PriorityQueue{T} <: AbstractQueue{T}
-    nodes::Vector{T}
-end
-
-PriorityQueue{T}() where T = PriorityQueue(T[])
-
 """Retire et renvoie l'élément ayant la plus haute priorité."""
 function popfirst!(queue::PriorityQueue)
   nodes = getNodes(queue)
-  index = nothing
+  # Retourne rien si la liste est vide
   if(length(nodes) == 0)
     return nothing
   else
-    highest = nodes[1]
+    lowest = nodes[1]
     index = 1
     if(length(nodes) > 1)
+      # On vient chercher le Node ayant le plus petit poids
       for i in 2:length(nodes)
         temp = nodes[i]
-        if(temp.minWeight <= highest.minWeight)
-          highest = temp
+        if(temp.minWeight <= lowest.minWeight)
+          lowest = temp
           index = i
         end
       end
     end
     deleteat!(queue.nodes, index)
-    return highest
+    return lowest
   end
 end

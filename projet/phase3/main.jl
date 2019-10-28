@@ -27,11 +27,10 @@ function kruskal(graph::AbstractGraph)
 end
 
 
-function prim(graphe::AbstractGraph)
+function prim!(graphe::AbstractGraph)
 
     arbre = initGraphPrim(graphe)
     file = getQueue(arbre)
-    println(file)
 
     # Définit le premier noeud à utiliser
     noeudDepart = popfirst!(file)
@@ -40,7 +39,6 @@ function prim(graphe::AbstractGraph)
     # Pour chaque noeud de la file de priorité
     while !is_empty(file)
         node = popfirst!(file)
-        show(node)
         add_edge!(arbre, node)
         majPoidsNoeud!(arbre, node)
     end

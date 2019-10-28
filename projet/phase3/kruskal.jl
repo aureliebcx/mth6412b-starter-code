@@ -24,7 +24,7 @@ end
 
 """
 Compresse les chemins entre deux noeuds d'une forêt.
-Node 1 est le nouveau noeud enfant.
+Node 1 est le nouveau noeud enfant ajouté ) l'arbre.
 Node 2 est la nouvelle racine.
 """
 function compression!(foret::Arbre, node1::AbstractNode, node2::AbstractNode)
@@ -34,7 +34,7 @@ function compression!(foret::Arbre, node1::AbstractNode, node2::AbstractNode)
     changeParent!(foret, node, node2)
   end
 
-  # Le rang de la racine devient 1 si jamais il est supérieur à 2
+  # Le rang de la racine devient 1 si jamais il est égal à 2
   if getRacine(foret, node2)[2] >= 1
     node2.rang = 1
   end

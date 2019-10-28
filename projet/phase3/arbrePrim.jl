@@ -1,4 +1,5 @@
 import Base.show
+
 """Type représentant un arbre de recouvrement minimal donné par l'algo de Prim.
 Exemple :
     node1 = Node(1,2, 0, Inf, nothing)
@@ -11,7 +12,6 @@ Exemple :
 
     arbre = ([node4], Dict(node1 => [edge1, edge3], node2 => [edge1, edge2], node3 => [edge2, edge3]), 3)
 """
-
 mutable struct Prim{T} <: AbstractGraph{T}
   queue::PriorityQueue{Node{T}}
   nodes::Dict{Node{T}, Vector{Edge{T}}}
@@ -24,17 +24,13 @@ initPrim(queue::PriorityQueue{Node{T}}, dict::Dict{Node{T}, Vector{Edge{T}}}) wh
 
 """Initialise un arbre vide avec une file d'attente avec tous les noeuds du graphe et un poids nul."""
 function initGraphPrim(graphe::AbstractGraph{T}) where T
-    graphe_copy = deepcopy(graphe)
     # Donne toutes les arêtes à partir d'un noeud
-    nodes = graphe_copy.nodes
-    edges = graphe_copy.edges
     dic = Dict{Node{T}, Vector{Edge{T}}}()
-    for node in nodes
+    for node in graphe.nodes
         setWeight(node, Inf, nothing)
-        show(node)
         dic[node] = []
     end
-    for edge in edges
+    for edge in graphe.edges
         push!(dic[getNode1(edge)], edge)
         push!(dic[getNode2(edge)], edge)
     end
@@ -70,7 +66,7 @@ function add_edge!(arbre::Prim{T}, noeud::AbstractNode{T}) where T
     if(index == nothing)
         index = findfirst(x  -> isequal(parent, getNode2(x)), edges)
     end
-    show(edges[index])
+    
     push!(arbre.edges, edges[index])
     arbre.weight = arbre.weight + minWeight(noeud)
     return arbre

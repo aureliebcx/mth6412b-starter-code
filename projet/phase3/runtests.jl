@@ -120,7 +120,7 @@ end
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
     # Test de la fonction prim
-    arbre = prim(graphe)
+    arbre = prim!(graphe)
     @test getWeight(arbre) == 4
 
     # Toutes les arêtes de l'arbre de recouvrement minimal sont présentes.
@@ -175,7 +175,7 @@ end
     end
 
 
-    graphePrim = prim(grapheCours)
+    graphePrim = prim!(grapheCours)
     @test getWeight(graphePrim) == 37
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(graphePrim)) == 8
