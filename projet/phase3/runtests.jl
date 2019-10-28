@@ -31,14 +31,26 @@ end
     node4 = Node(4,1)
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
+    edge3 = Edge(node3, node4, 2)
     edge4 = Edge(node1, node4, 1)
-    arbre = Arbre("test", Dict(node3 => node3, node1 => node1, node2 => node3, node4 => node4), [edge2])
+    arbre = Arbre("test", Dict(node3 => node3, node1 => node1, node2 => node2, node4 => node4), [edge2])
 
-    # Test si elles ont la même racine
+    # Test si elles ont le même rang
+    poids = union!(edge4, arbre, 0)
+    @test getParent(arbre, node1) == node4
+    @test poids == 1
+    @test getEdges(arbre) == [edge2, edge4]
 
     # Test si racine1 est plus petite que racine2
+    poids = union!(edge3, arbre, poids)
+    @test getParent(arbre, node3) == node4
+    @test poids == 3
 
     # Test si racine2 est plus petite ou égale que racine1
+
+    poids = union!(edge1, arbre, poids)
+    @test getParent(arbre, node2) == node4
+    @test poids == 5
 
 end
 
