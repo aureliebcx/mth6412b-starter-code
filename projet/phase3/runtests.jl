@@ -47,7 +47,6 @@ end
     @test poids == 3
 
     # Test si racine2 est plus petite ou égale que racine1
-
     poids = union!(edge1, arbre, poids)
     @test getParent(arbre, node2) == node4
     @test poids == 5
