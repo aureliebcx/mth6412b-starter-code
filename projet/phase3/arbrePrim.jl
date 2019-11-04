@@ -16,11 +16,10 @@ mutable struct Prim{T} <: AbstractGraph{T}
   queue::PriorityQueue{Node{T}}
   nodes::Dict{Node{T}, Vector{Edge{T}}}
   edges:: Vector{Edge{T}}
-  weight::Int
 end
 
 """Initialie un arbre vide."""
-initPrim(queue::PriorityQueue{Node{T}}, dict::Dict{Node{T}, Vector{Edge{T}}}) where T = Prim(queue, dict, Vector{Edge{T}}(), 0)
+initPrim(queue::PriorityQueue{Node{T}}, dict::Dict{Node{T}, Vector{Edge{T}}}) where T = Prim(queue, dict, Vector{Edge{T}}())
 
 """Initialise un arbre vide avec une file d'attente avec tous les noeuds du graphe et un poids nul."""
 function initGraphPrim(graphe::AbstractGraph{T}) where T
@@ -50,25 +49,30 @@ getEdges(arbre::Prim) = arbre.edges
 """Renvoie les arêtes reliant un noeud de l'arbre."""
 getEdgesOfNode(arbre::Prim, node::AbstractNode) = arbre.nodes[node]
 
-"""Renvoie le poids de l'arbre."""
-getWeight(arbre::Prim) = arbre.weight
-
 """Renvoie la file d'attente de noeuds."""
 getQueue(arbre::Prim) = arbre.queue
 
-"""Met à jour l'arbre : ajoute l'arête minimale d'un noeud à l'arbre de recouvrement minimal."""
+"""Renvoie le poids du graphe."""
+function getWeight(arbre::Prim)
+    weight = 0
+    for edge in arbre.edges
+        weight = weight + edge.weight
+    end
+    return weight
+end
+
+"""Ajoute noeud au graphe arbre de type Prim par l'arête associée."""
 function add_edge!(arbre::Prim{T}, noeud::AbstractNode{T}) where T
     minWeight(noeud) == Inf && return error("Noeud non rattaché à l'arbre de recouvrement")
     edges = getEdgesOfNode(arbre, noeud)
     parent = getParent(noeud)
     # Recupère l'arête minimale à ajouter
     index = findfirst(x  -> isequal(parent, getNode1(x)), edges)
-    if(index == nothing)
+    if(isa(index, Nothing))
         index = findfirst(x  -> isequal(parent, getNode2(x)), edges)
     end
-    
+
     push!(arbre.edges, edges[index])
-    arbre.weight = arbre.weight + minWeight(noeud)
     return arbre
 end
 

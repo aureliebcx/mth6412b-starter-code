@@ -45,7 +45,7 @@ getParent(node::AbstractNode) = node.parent
 
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  if(getParent(node) == nothing)
+  if(isa(getParent(node), Nothing))
     println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node))
   else
     println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node), ", parent: ", name(getParent(node)))

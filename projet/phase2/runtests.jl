@@ -62,12 +62,12 @@ end
     @test getParent(foret, node3) == node3
     @test edges(foret) == Edge{Int64}[]
     @test getParent(foret, node1) == node1
-    @test getRacine(foret, node1)[1] == node1
+    @test getRacine(foret, node1) == node1
     changeParent!(foret, node1, node2)
     @test getParent(foret, node1) == node2
-    @test getRacine(foret, node1)[1] == node2
+    @test getRacine(foret, node1) == node2
     changeParent!(foret, node2, node3)
-    @test getRacine(foret, node1)[1] == node3
+    @test getRacine(foret, node1) == node3
     # Problème sur les erreurs retournées par la fonction. A voir avec le prof.
     #@test_throws ErrorException("le parent n'existe pas") getParent(foret, node4)
     #@test_throws ErrorException("le parent n'existe pas") getRacine(foret, node4)
@@ -86,9 +86,9 @@ end
     edge3 = Edge(node1, node3, 1)
     add_edge!(graphe, edge3)
     # test du bon fonctionnement de l'algo
-    arbre = algoKruskal(graphe)
-    @test getRacine(arbre, node3)[1] == node3 || node1
-    @test getRacine(arbre, node2)[1] == node3 || node2
-    @test getRacine(arbre, node1)[1] == node3 || node1
+    arbre = kruskal(graphe)
+    @test getRacine(arbre, node3) == node3 || node1
+    @test getRacine(arbre, node2)== node3 || node2
+    @test getRacine(arbre, node1) == node3 || node1
     @test edges(arbre) == [edge3, edge2]
 end

@@ -56,14 +56,14 @@ function getRacine(arbre::AbstractGraph{T}, noeud::AbstractNode{T}) where T
     parent = getParent(arbre, parent)
   end
 
-  return enfant, enfant.rang
+  return enfant
 end
 
 
 """Affiche un arbre de recouvrement minimal."""
 function show(arbre::Arbre)
   for key in keys(arbre.link)
-    if(key != nothing)
+    if(!isa(key, Nothing))
       show(key)
     end
   end

@@ -9,6 +9,11 @@ include(joinpath(@__DIR__, "queue.jl"))
 include(joinpath(@__DIR__, "main.jl"))
 
 @testset "Compression" begin
+    #=
+        1----4
+             |
+        3----2
+    =#
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -25,6 +30,11 @@ include(joinpath(@__DIR__, "main.jl"))
 end
 
 @testset "Union" begin
+    #=
+        1---4
+          / |
+        3---2
+    =#
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -39,7 +49,7 @@ end
     poids = union!(edge4, arbre, 0)
     @test getParent(arbre, node1) == node4
     @test poids == 1
-    @test getEdges(arbre) == [edge2, edge4]
+    @test edges(arbre) == [edge2, edge4]
 
     # Test si racine1 est plus petite que racine2
     poids = union!(edge3, arbre, poids)
@@ -54,6 +64,11 @@ end
 end
 
 @testset "PriorityQueue" begin
+    #=
+        1----4
+             |
+        3----2
+    =#
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -76,6 +91,11 @@ end
 end
 
 @testset "arbrePrim.jl" begin
+    #=
+        1----4
+        |    |
+        3----2
+    =#
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -94,14 +114,14 @@ end
     @test length(getNodes(prim)) == 4
     t = [node2, node1, node3, node4]
     for node in getNodes(prim)
-        @test findall(x -> x == node, t) != nothing
+        @test !isa(findall(x -> x == node, t), Nothing)
     end
 
     # Les arêtes associées à un noeud sont présentes dans le dictionnaire
     @test getEdgesOfNode(prim, node1) == [edge3, edge4]
 
     # Il n'y a pas encore d'arêtes dans l'arbre de recouvrement minimal
-    @test length(getEdges(prim)) == 0
+    @test length(edges(prim)) == 0
 
     # test majPoidsNoeud!
     file = getNodes(getQueue(prim))
@@ -114,12 +134,17 @@ end
 
     #test add_edge!
     add_edge!(prim, node3)
-    @test getEdges(prim) == [edge3]
+    @test edges(prim) == [edge3]
     @test getWeight(prim) == 3
 
 end
 
 @testset "prim" begin
+    #=
+        1----4
+        |    |
+        3----2
+    =#
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -138,7 +163,7 @@ end
     @test length(getEdges(arbre)) == 3
     t = [edge4, edge1, edge2]
     for edge in getEdges(arbre)
-        @test findall(x -> x == edge, t) != nothing
+        @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
     # Il ne reste plus de noeuds à ajouter.
@@ -182,7 +207,7 @@ end
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(grapheKruskal)) == 8
     for edge in getEdges(grapheKruskal)
-        @test findall(x -> x == edge, t) != nothing
+        @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
 
@@ -191,7 +216,7 @@ end
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(graphePrim)) == 8
     for edge in getEdges(graphePrim)
-        @test findall(x -> x == edge, t) != nothing
+        @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
 
