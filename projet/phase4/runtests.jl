@@ -2,7 +2,9 @@ using Test
 include(joinpath(@__DIR__, "..", "phase3", "main.jl"))
 include(joinpath(@__DIR__, "..", "phase4", "RSL.jl"))
 
-@testset "isequal" begin
+include(joinpath(@__DIR__, "..", "phase1", "read_stsp.jl"))
+
+@testset "isequal and find_edge" begin
     node1 = Node(1,2)
     node2 = Node(2,1)
     node3 = Node(3,1)
@@ -14,6 +16,8 @@ include(joinpath(@__DIR__, "..", "phase4", "RSL.jl"))
 
     @test isequal(edge1, edge1)
     @test !isequal(edge1, edge2)
+
+    @test isequal(find_edge(node1, node2, [edge1, edge2]), edge1)
 end
 
 @testset "parcours pré-ordre" begin
@@ -22,14 +26,16 @@ end
         |    |
         3----2
     =#
-    node1 = Node(1,2)
-    node2 = Node(2,1)
-    node3 = Node(3,1)
-    node4 = Node(4,1)
+    node1 = Node(1,[0,1])
+    node2 = Node(2,[1,1])
+    node3 = Node(3,[0,0])
+    node4 = Node(4,[1,1])
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node1, node3, 3)
     edge4 = Edge(node1, node4, 1)
+    edge5 = Edge(node1, node2, 5)
+    edge6 = Edge(node3, node4, 5)
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
     #= arbre
@@ -40,8 +46,11 @@ end
 
     arbre = prim!(graphe)
 
-    ordre = parcours_pre(arbre, node2)
-end
+    ordre1 = parcours_pre(arbre, node1)
+    @test ordre1 ==  [node1, node4, node2, node3, node1]
+
+    ordre2 = parcours_pre(arbre, node2)
+    @test ordre2 == [node2, node3, node4, node1, node2] ||  [node2, node4, node1, node3, node2]
 
 @testset "RSL" begin
     #= graphe
@@ -49,10 +58,10 @@ end
         |  X  |
         3-----2
     =#
-    node1 = Node(1,2)
-    node2 = Node(2,1)
-    node3 = Node(3,1)
-    node4 = Node(4,1)
+    node1 = Node(1,[1,2])
+    node2 = Node(2,[2,1])
+    node3 = Node(3,[1,1])
+    node4 = Node(4,[2,2])
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node1, node3, 3)
@@ -61,9 +70,13 @@ end
     edge6 = Edge(node3, node4, 5)
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4, edge5, edge6])
 
-    rsl = RSL(graphe, node2)
-    filename = joinpath(@__DIR__,"..","..","instances","stsp","gr17.tsp")
-    plot_graph(filename)
+    rsl_1 = RSL(graphe, node1)
+    @test rsl_1 == [edge4, edge1, edge2, edge3]
+    plot_tournee(graphe.nodes, rsl_1)
+    rsl_2 = RSL(graphe, node2)
+    @test rsl_2 == [edge2, edge6, edge4, edge5] || [edge1, edge4, edge3, edge2]
+end
+
 
 end
 
@@ -97,8 +110,6 @@ end
     edges = [edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8, edge9, edge10, edge11, edge12, edge13, edge14]
 
     edge = find_edge(node1, node2, edges)
-
-    @test isequal(edge1, edge1)
     @test isequal(edge1, edge)
 
     grapheCours = Graph("cours", nodes, edges)

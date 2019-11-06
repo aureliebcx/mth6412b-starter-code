@@ -42,6 +42,9 @@ name(node::AbstractNode) = node.name
 """Renvoie les données contenues dans le noeud."""
 data(node::AbstractNode) = node.data
 
+"""Renvoie les données contenues dans un tableau de noeud."""
+data(nodes::Vector{Node{T}}) where T = [data(node) for node in nodes]
+
 """Renvoie le parent du noeud."""
 getParent(node::AbstractNode) = node.parent
 

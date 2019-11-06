@@ -248,6 +248,25 @@ function plot_graph(nodes, edges)
   fig
 end
 
+"""Fonction de commodité qui trace un graphe à partir d'un tableau d'arêtes et un tableau de noeuds."""
+function plot_tournee(nodes::Vector{Node{T}}, edges::Vector{Edge{T}}) where T
+  fig = plot(legend=false)
+
+  for edge in edges
+    x = [data(getNode1(edge))[1], data(getNode2(edge))[1]]
+    y = [data(getNode1(edge))[2],data(getNode2(edge))[2]]
+    plot!(x, y, linewidth=1.5, alpha=0.75, color=:red)
+  end
+
+  xys = data(nodes)
+  x = [xy[1] for xy in xys]
+  y = [xy[2] for xy in xys]
+  scatter!(x, y)
+
+  display(fig)
+end
+
+
 """Fonction de commodité qui lit un fichier stsp et trace le graphe."""
 function plot_graph(filename::String)
   graph_nodes, graph_edges = read_stsp(filename)
