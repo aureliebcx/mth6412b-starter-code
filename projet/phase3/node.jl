@@ -1,5 +1,6 @@
 import Base.show
 import Base.Inf
+import Base.isequal
 """Type abstrait dont d'autres types de noeuds dériveront."""
 abstract type AbstractNode{T} end
 
@@ -18,6 +19,7 @@ mutable struct Node{T} <: AbstractNode{T}
   rang::Int
   minWeight::Union{Float64, Int}
   parent::Union{Nothing, AbstractNode{}}
+  visited::Bool
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
@@ -25,7 +27,7 @@ end
 
 """Implémente un noeud avec un rang nul."""
 function Node(name::Int, data::T) where T
-  Node(name, data, 0, Inf, nothing)
+  Node(name, data, 0, Inf, nothing, false)
 end
 
 """Renvoie le poids minimal associé au noeud."""
@@ -43,6 +45,14 @@ data(node::AbstractNode) = node.data
 """Renvoie le parent du noeud."""
 getParent(node::AbstractNode) = node.parent
 
+"""Renvoie l'état du noeud."""
+getVisited(node::AbstractNode) = node.visited
+
+"""Modifie l'état du noeud."""
+function setVisited(node::AbstractNode, etat::Bool)
+  node.visited = etat
+end
+
 """Affiche un noeud."""
 function show(node::AbstractNode)
   if(isa(getParent(node), Nothing))
@@ -59,4 +69,4 @@ function setWeight(node::AbstractNode, weight::Union{Float64, Int}, parent::Unio
 end
 
 """Retourne si un noeud est égal à l'autre."""
-isequal(node1::AbstractNode, node2::AbstractNode) = node1==node2
+isequal(node1::AbstractNode, node2::AbstractNode) = node1.name == node2.name && node1.data == node2.data

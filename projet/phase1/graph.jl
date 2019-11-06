@@ -1,4 +1,5 @@
 import Base.show
+include(joinpath(@__DIR__,"..", "phase3","node.jl"))
 
 """Type abstrait dont d'autres types de graphes dériveront."""
 abstract type AbstractGraph{T} end
@@ -19,23 +20,6 @@ Attention, tous les noeuds doivent avoir des données de même type.
 mutable struct Graph{T} <: AbstractGraph{T}
   name::String
   nodes::Vector{Node{T}}
-  edges::Vector{Edge{T}}
-end
-
-"""Type représentant les parents de chaque noeud d'un graphe pour un arbre de recouvrement.
-Exemple :
-    node1 = Node(1,2)
-    node2 = Node(2,1)
-    node3 = Node(3,1)
-    edge1 = Edge(node1, node2, 4)
-    edge2 = Edge(node2, node3, 2)
-    edge3 = Edge(node1, node3, 1)
-
-    arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge1, edge2, edge3]
-"""
-mutable struct Arbre{T} <: AbstractGraph{T}
-  name::String
-  link::Dict{Node{T}, Node{T}}
   edges::Vector{Edge{T}}
 end
 
@@ -67,7 +51,7 @@ nodes(graph::Graph) = graph.nodes
 nb_nodes(graph::Graph) = length(graph.nodes)
 
 """Renvoie la liste des arêtes du graphe."""
-edges(graph::AbstractGraph) = graph.edges
+edges(graph::Graph) = graph.edges
 
 """Renvoie le nombre d'arêtes du graphe."""
 nb_edges(graph::AbstractGraph) = length(graph.edges)

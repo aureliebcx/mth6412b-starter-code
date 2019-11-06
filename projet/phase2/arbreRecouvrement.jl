@@ -20,6 +20,8 @@ mutable struct Arbre{T} <: AbstractGraph{T}
   edges::Vector{Edge{T}}
 end
 
+
+
 """Change le parent d'un noeud. """
 function changeParent!(tabParents::Arbre, nodeChild::AbstractNode, nodeFather::AbstractNode)
   tabParents.link[nodeChild] = nodeFather
@@ -28,6 +30,9 @@ end
 
 """Renvoie les arêtes de l'arbre."""
 getEdges(arbre::Arbre) = arbre.edges
+
+"""Renvoie les noeuds de l'arbre."""
+getNodes(arbre::Arbre) = collect(keys(arbre.link))
 
 """Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
 getParents(graphe::Arbre) = graphe.link

@@ -1,4 +1,4 @@
-"""using Plots"""
+using Plots
 
 """Analyse un fichier .tsp et renvoie un dictionnaire avec les données de l'entête."""
 function read_header(filename::String)
@@ -203,7 +203,7 @@ function read_stsp(filename::String)
     push!(graph_edges, edge_list)
   end
 
-  #Le premier noeud de l'arête est représenté par la ligne du tableau edges. Chaque tuple représente le deuxième noeud de l'arête et son poids associé 
+  #Le premier noeud de l'arête est représenté par la ligne du tableau edges. Chaque tuple représente le deuxième noeud de l'arête et son poids associé
   for edge in edges_brut
     if edge_weight_format in ["UPPER_ROW", "LOWER_COL", "UPPER_DIAG_ROW", "LOWER_DIAG_COL"]
       push!(graph_edges[edge[1]], (edge[2], edge[3]))

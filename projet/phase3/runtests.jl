@@ -1,4 +1,3 @@
-import Base.show
 using Test
 include(joinpath(@__DIR__, "..", "phase3", "node.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "edge.jl"))
