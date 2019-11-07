@@ -13,21 +13,22 @@ Exemple :
     arbre = ([node4], Dict(node1 => [edge1, edge3], node2 => [edge1, edge2], node3 => [edge2, edge3]), 3)
 """
 mutable struct Prim{T} <: AbstractGraph{T}
+  arbre::Graph{T}
   queue::PriorityQueue{Node{T}}
   nodes::Dict{Node{T}, Vector{Edge{T}}}
-  edges:: Vector{Edge{T}}
+  parents::Dict{Node{T}, Union{Edge{T}, Nothing}}
 end
 
-"""Initialie un arbre vide."""
-initPrim(queue::PriorityQueue{Node{T}}, dict::Dict{Node{T}, Vector{Edge{T}}}) where T = Prim(queue, dict, Vector{Edge{T}}())
 
-"""Initialise un arbre vide avec une file d'attente avec tous les noeuds du graphe et un poids nul."""
+"""Initialise un arbre vide avec une file d'attente avec tous les noeuds du graphe."""
 function initGraphPrim(graphe::AbstractGraph{T}) where T
+    arbre = initGraph(graphe)
     # Donne toutes les arêtes à partir d'un noeud
     dic = Dict{Node{T}, Vector{Edge{T}}}()
+    parents = Dict{Node{T}, Union{Edge{T}, Nothing}}()
     for node in graphe.nodes
-        setWeight(node, Inf, nothing)
         dic[node] = []
+        parents[node] = nothing
     end
     for edge in graphe.edges
         push!(dic[getNode1(edge)], edge)
@@ -35,63 +36,78 @@ function initGraphPrim(graphe::AbstractGraph{T}) where T
     end
 
     # Crée une file d'attente de noeuds et un graphe de type Prim.
-    file = PriorityQueue(collect(keys(dic)))
-    prim = initPrim(file, dic)
+    file = PriorityQueue(Array{Node{T},1}(), Union{Int, Float64}[])
+    for node in collect(keys(dic))
+        push!(file, node)
+    end
+    prim = Prim(arbre, file, dic, parents)
     return prim
 end
 
 """Renvoie les noeuds d'un arbre de recouvrement."""
-getNodes(arbre::Prim) = collect(keys(arbre.nodes))
+getNodes(prim::Prim) = collect(keys(prim.nodes))
 
 """Renvoie les arêtes utilisées pour l'arbre de recouvrement minimal."""
-getEdges(arbre::Prim) = arbre.edges
+getEdges(prim::Prim) = prim.arbre.edges
 
 """Renvoie les arêtes reliant un noeud de l'arbre."""
-getEdgesOfNode(arbre::Prim, node::AbstractNode) = arbre.nodes[node]
+getEdgesOfNode(prim::Prim, node::AbstractNode) = prim.nodes[node]
 
 """Renvoie la file d'attente de noeuds."""
-getQueue(arbre::Prim) = arbre.queue
+getQueue(prim::Prim) = prim.queue
+
+
 
 """Renvoie le poids du graphe."""
-function getWeight(arbre::Prim)
-    weight = 0
-    for edge in arbre.edges
+function getWeight(prim::Prim)
+    prim = 0
+    for edge in prim.arbre.edges
         weight = weight + edge.weight
     end
     return weight
 end
 
 """Ajoute noeud au graphe arbre de type Prim par l'arête associée."""
-function add_edge!(arbre::Prim{T}, noeud::AbstractNode{T}) where T
-    minWeight(noeud) == Inf && return error("Noeud non rattaché à l'arbre de recouvrement")
-    edges = getEdgesOfNode(arbre, noeud)
-    parent = getParent(noeud)
-    # Recupère l'arête minimale à ajouter
-    index = findfirst(x  -> isequal(parent, getNode1(x)), edges)
-    if(isa(index, Nothing))
-        index = findfirst(x  -> isequal(parent, getNode2(x)), edges)
-    end
-
-    push!(arbre.edges, edges[index])
-    return arbre
-end
+push!(prim::Prim{T}, edge::AbstractEdge{T}) where T = push!(prim.arbre.edges, edge)
 
 """Affiche un arbre de recouvrement."""
-function show(arbre::Prim)
-    println("L'arbre de recouvrement minimal a un poids de ", getWeight(arbre))
+function show(prim::Prim)
+    println("L'arbre de recouvrement minimal a un poids de ", getWeight(prim))
 end
 
 """Met à jour le poids associé à chaque noeud lorsqu'on ajoute le noeud en paramètre au graphe en paramètre."""
-function majPoidsNoeud!(arbre::Prim{T}, noeud::AbstractNode{T}) where T
-    nodes = getNodes(getQueue(arbre))
-    edges = getEdgesOfNode(arbre, noeud)
+function majPoidsNoeud!(prim::Prim{T}, noeud::AbstractNode{T}) where T
+    #=nodes = getNodes(getQueue(prim))
+    edges = getEdgesOfNode(prim, noeud)
     for node in nodes
         for edge in edges
+            println(edge)
             if(node == edge.node1 ||  node == edge.node2)
-                if(weight(edge)<= minWeight(node))
-                    setWeight(node, weight(edge), noeud)
+                if(weight(edge)<= minWeight(prim, node))
+                    setWeight(prim, node, edge)
                 end
             end
         end
+    end=#
+    file = getNodes(getQueue(prim))
+    edges = getEdgesOfNode(prim, noeud)
+    for edge in edges
+        noeud == edge.node1 ? noeud2=edge.node1 : noeud2=edge.node2
+        if (noeud2 in file && (weight(edge)<= minWeight(prim, node)))
+            setWeight(prim, noeud2, edge)
+        end
+
     end
+
 end
+
+"""Met à jour l'arête minimale edge d'un noeud node dans le graphe prim."""
+function setWeight(prim::Prim, node::AbstractNode, edge::AbstractEdge)
+    prim.parents[node] = edge
+end
+
+"""Renvoie le poids minimum d'un noeud node dans le graphe prim."""
+minWeight(prim::Prim, node::AbstractNode) = weight(get(prim.parents, node, ErrorException("le noeud n'existe pas dans l'arbre.")))
+
+"""Renvoie l'arête de poids minimum d'un noeud node dans le graphe prim."""
+getEdge(prim::Prim, node::AbstractNode) = get(prim.parents, node, ErrorException("le noeud n'existe pas dans l'arbre."))

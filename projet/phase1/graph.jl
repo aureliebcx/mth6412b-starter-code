@@ -23,6 +23,9 @@ mutable struct Graph{T} <: AbstractGraph{T}
   edges::Vector{Edge{T}}
 end
 
+"""Initialise un objet de type Graph sans arêtes à partir de graphe."""
+initGraph(graphe::Graph{T}) where T = Graph(name(graphe), getNodes(graphe), Vector{Edge{T}}())
+
 """Ajoute un noeud au graphe."""
 function add_node!(graph::Graph{T}, node::Node{T}) where T
   push!(graph.nodes, node)
@@ -45,13 +48,13 @@ typeNode(graph::Graph{T}) where T = T
 name(graph::AbstractGraph) = graph.name
 
 """Renvoie la liste des noeuds du graphe."""
-nodes(graph::Graph) = graph.nodes
+getNodes(graph::Graph) = graph.nodes
 
 """Renvoie le nombre de noeuds du graphe."""
 nb_nodes(graph::Graph) = length(graph.nodes)
 
 """Renvoie la liste des arêtes du graphe."""
-edges(graph::Graph) = graph.edges
+getEdges(graph::AbstractGraph) = graph.edges
 
 """Renvoie le nombre d'arêtes du graphe."""
 nb_edges(graph::AbstractGraph) = length(graph.edges)

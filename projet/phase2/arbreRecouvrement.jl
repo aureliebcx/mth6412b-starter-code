@@ -14,41 +14,39 @@ Exemple :
 
     arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge2, edge3])
 """
-mutable struct Arbre{T} <: AbstractGraph{T}
-  name::String
-  link::Dict{Node{T}, Node{T}}
+mutable struct Kruskal{T} <: AbstractGraph{T}
+  parents::Dict{Node{T}, Node{T}}
   edges::Vector{Edge{T}}
 end
 
 
-
 """Change le parent d'un noeud. """
-function changeParent!(tabParents::Arbre, nodeChild::AbstractNode, nodeFather::AbstractNode)
-  tabParents.link[nodeChild] = nodeFather
+function changeParent!(tabParents::Kruskal, nodeChild::AbstractNode, nodeFather::AbstractNode)
+  tabParents.parents[nodeChild] = nodeFather
   return tabParents
 end
 
 """Renvoie les arêtes de l'arbre."""
-getEdges(arbre::Arbre) = arbre.edges
+getEdges(arbre::Kruskal) = arbre.edges
 
 """Renvoie les noeuds de l'arbre."""
-getNodes(arbre::Arbre) = collect(keys(arbre.link))
+getNodes(arbre::Kruskal) = collect(keys(arbre.parents))
 
 """Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
-getParents(graphe::Arbre) = graphe.link
+getParents(graphe::Kruskal) = graphe.parents
 
 
 """Retourne le parent du noeud donné s'il existe"""
-function getParent(parent::Arbre{T}, noeud::AbstractNode{T}) where T
+function getParent(parent::Kruskal{T}, noeud::AbstractNode{T}) where T
   return get(getParents(parent), noeud, ErrorException("le parent n'existe pas"))
 end
 
 
-"""Initialise un objet de type Arbre pour un graphe"""
+"""Initialise un objet de type Kruskal pour un graphe"""
 function initArbre(graphe::AbstractGraph{T}) where T
   init = Dict(node => node for node in nodes(graphe))
   edges = Edge{typeNode(graphe)}[]
-  foret = Arbre(name(graphe), init, edges)
+  foret = Kruskal(init, edges)
   return foret
 end
 
@@ -66,8 +64,8 @@ end
 
 
 """Affiche un arbre de recouvrement minimal."""
-function show(arbre::Arbre)
-  for key in keys(arbre.link)
+function show(arbre::Kruskal)
+  for key in keys(arbre.parents)
     if(!isa(key, Nothing))
       show(key)
     end

@@ -1,5 +1,5 @@
 """Union de deux noeuds selon le rang de leur racine si elles n'ont pas le même noeud."""
-function union!(arete::Edge, foret::Arbre, poids)
+function union!(arete::Edge, foret::Kruskal)
   racine1 = getRacine(foret, getNode1(arete))
   rang1 = rang(racine1)
   racine2 = getRacine(foret, getNode2(arete))
@@ -19,9 +19,7 @@ function union!(arete::Edge, foret::Arbre, poids)
     end
     # On ajoute l'arête à l'arbre
     add_edge!(foret, arete)
-    poids = poids + weight(arete)
   end
-  return poids
 end
 
 """
@@ -29,7 +27,7 @@ Compresse les chemins entre deux noeuds d'une forêt.
 Node 1 est le nouveau noeud enfant ajouté à l'arbre.
 Node 2 est la nouvelle racine.
 """
-function compression!(foret::Arbre, node1::AbstractNode, node2::AbstractNode)
+function compression!(foret::Kruskal, node1::AbstractNode, node2::AbstractNode)
   # Tous les noeuds qui ont pour parents la racine noeud1 vont avoir pour racine le node2
   nodes = findall(x -> x == node1, getParents(foret))
   for node in nodes

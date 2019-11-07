@@ -65,7 +65,6 @@ function parcours_pre(arbre::Union{Prim{T}, Arbre{T}}, racine::Node{T}) where T
         end
     end
 
-
     return ordre
 
 end
