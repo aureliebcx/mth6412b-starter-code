@@ -10,12 +10,13 @@ Exemple :
     edge2 = Edge(node2, node3, 2)
     edge3 = Edge(node1, node3, 1)
 
-    arbre = ([node4], Dict(node1 => [edge1, edge3], node2 => [edge1, edge2], node3 => [edge2, edge3]), 3)
+    arbre = (("graphe",[node1, node2, node3], [edge1, edge2, edge3]), ([node1, node2, node3], [nothing, nothing, nothing]) , queue::PriorityQueue, Dict(node1 => [edge1, edge3], node2 => [edge1, edge2], node3 => [edge2, edge3]), node3)
 """
 mutable struct Prim{T} <: AbstractGraph{T}
   arbre::Graph{T}
   queue::PriorityQueue{T}
   nodes::Dict{Node{T}, Vector{Edge{T}}}
+  firstNode::Union{Nothing, AbstractNode{T}}
 end
 
 
@@ -37,7 +38,7 @@ function initGraphPrim(graphe::AbstractGraph{T}) where T
     for node in collect(keys(dic))
         push!(file, node)
     end
-    prim = Prim(arbre, file, dic)
+    prim = Prim(arbre, file, dic,nothing)
     return prim
 end
 
@@ -105,3 +106,11 @@ getEdge(prim::Prim, node::AbstractNode) = prim.queue.minWeight[getIndex(prim, no
 
 """Renvoie l'index de node dans la file de priorité de prim."""
 getIndex(prim::Prim, node::AbstractNode) = findfirst(x -> x == node, prim.queue.nodes)
+
+"""Renvoie le noeud de départ."""
+getFirstNode(prim::Prim) = prim.firstNode
+
+"""Met à jour le noeud de départ."""
+function setFirstNode(prim::Prim, node::AbstractNode) 
+    prim.firstNode = node
+end

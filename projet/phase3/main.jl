@@ -33,6 +33,7 @@ function prim(graphe::AbstractGraph)
 
     # Définit le premier noeud à utiliser
     noeudDepart, edge = popfirst!(file)
+    setFirstNode(prim, noeudDepart)
     majPoidsNoeud!(prim, noeudDepart)
 
     # Pour chaque noeud de la file de priorité

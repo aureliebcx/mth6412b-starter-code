@@ -6,7 +6,7 @@ include(joinpath(@__DIR__, "..", "phase1", "read_stsp.jl"))
 include(joinpath(@__DIR__, "..", "phase2", "arbreRecouvrement.jl"))
 include(joinpath(@__DIR__, "queue.jl"))
 include(joinpath(@__DIR__, "main.jl"))
-#=
+
 @testset "Compression" begin
     #=
         1----4
@@ -20,7 +20,8 @@ include(joinpath(@__DIR__, "main.jl"))
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
     edge4 = Edge(node1, node4, 1)
-    arbre = Kruskal("test", Dict(node3 => node3, node1 => node4, node2 => node3, node4 => node3), [edge2, edge4, edge1])
+    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge2, edge4])
+    arbre = Kruskal(graphe, Dict(node3 => node3, node1 => node4, node2 => node3, node4 => node3))
     node3.rang = 2
     compression!(arbre, node4, node3)
     @test getParent(arbre, node1) == node3
@@ -42,25 +43,26 @@ end
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node3, node4, 2)
     edge4 = Edge(node1, node4, 1)
-    arbre = Kruskal("test", Dict(node3 => node3, node1 => node1, node2 => node2, node4 => node4), [edge2])
+    graphe = Graph("test", [node1, node2, node3, node4], [edge2])
+    kruskal = Kruskal(graphe, Dict(node3 => node3, node1 => node1, node2 => node2, node4 => node4))
 
     # Test si elles ont le même rang
-    poids = union!(edge4, arbre)
-    @test getParent(arbre, node1) == node4
+    poids = union!(edge4, kruskal)
+    @test getParent(kruskal, node1) == node4
     #@test poids == 1
-    @test edges(arbre) == [edge2, edge4]
+    @test getEdges(kruskal) == [edge2, edge4]
 
     # Test si racine1 est plus petite que racine2
-    poids = union!(edge3, arbre)
-    @test getParent(arbre, node3) == node4
+    poids = union!(edge3, kruskal)
+    @test getParent(kruskal, node3) == node4
     #@test poids == 3
 
     # Test si racine2 est plus petite ou égale que racine1
-    poids = union!(edge1, arbre)
-    @test getParent(arbre, node2) == node4
+    poids = union!(edge1, kruskal)
+    @test getParent(kruskal, node2) == node4
     #@test poids == 5
 
-end =#
+end
 
 @testset "PriorityQueue" begin
     #=
@@ -142,6 +144,9 @@ end
     @test getEdges(prim) == [edge3]
     @test getWeight(prim) == 3
 
+    setFirstNode(prim, node2)
+    @test getFirstNode(prim) == node2
+
 
 
 end
@@ -177,7 +182,7 @@ end
     @test is_empty(getQueue(graphePrim))
 
 end
-#=
+
 @testset "exemple cours" begin
     # Test sur l'arbre vu en cours
     # Construction des noeuds
@@ -212,13 +217,13 @@ end
     grapheCours = Graph("cours", nodes, edges)
     grapheKruskal = kruskal(grapheCours)
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
+
     @test length(getEdges(grapheKruskal)) == 8
     for edge in getEdges(grapheKruskal)
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
-
-    graphePrim = prim!(grapheCours)
+    graphePrim = prim(grapheCours)
     @test getWeight(graphePrim) == 37
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(graphePrim)) == 8
@@ -228,4 +233,3 @@ end
 
 
 end
-=#

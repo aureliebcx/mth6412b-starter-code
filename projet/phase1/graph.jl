@@ -64,3 +64,12 @@ function show(graph::Graph)
   println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes.")
   println(" and ", nb_edges(graph), "edges.")
 end
+
+"""Renvoie le poids du graphe."""
+function getWeight(graphe::Union{Prim, Kruskal})
+    weight = 0
+    for edge in getEdges(getArbre(graphe))
+        weight = weight + edge.weight
+    end
+    return weight
+end

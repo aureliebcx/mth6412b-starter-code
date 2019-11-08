@@ -86,8 +86,9 @@ function popfirst!(queue::PriorityQueue)
       # On vient chercher l'arête ayant le plus petit poids
       for i in 2:length(edges)
         temp = edges[i]
-        if(!isa(temp, Nothing) && weight(temp) <= weight(lowest))
+        if(weight(temp) < weight(lowest))
           index = i
+          lowest = edges[i]
         end
       end
     end

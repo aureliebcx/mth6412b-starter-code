@@ -15,8 +15,8 @@ Exemple :
     arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge2, edge3])
 """
 mutable struct Kruskal{T} <: AbstractGraph{T}
+  arbre::Graph{T}
   parents::Dict{Node{T}, Node{T}}
-  edges::Vector{Edge{T}}
 end
 
 
@@ -27,14 +27,16 @@ function changeParent!(tabParents::Kruskal, nodeChild::AbstractNode, nodeFather:
 end
 
 """Renvoie les arêtes de l'arbre."""
-getEdges(arbre::Kruskal) = arbre.edges
+getEdges(kruskal::Kruskal) = kruskal.arbre.edges
 
 """Renvoie les noeuds de l'arbre."""
-getNodes(arbre::Kruskal) = collect(keys(arbre.parents))
+getNodes(kruskal::Kruskal) = collect(keys(kruskal.parents))
 
 """Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
 getParents(graphe::Kruskal) = graphe.parents
 
+"""Renvoie l'arbre de recouvrement."""
+getArbre(graphe::Kruskal) = graphe.arbre
 
 """Retourne le parent du noeud donné s'il existe"""
 function getParent(parent::Kruskal{T}, noeud::AbstractNode{T}) where T
@@ -44,19 +46,19 @@ end
 
 """Initialise un objet de type Kruskal pour un graphe"""
 function initArbre(graphe::AbstractGraph{T}) where T
+  grapheRecouvrement = Graph("Spanning Tree", [node for node in getNodes(graphe)], Edge{T}[])
   init = Dict(node => node for node in getNodes(graphe))
-  edges = Edge{typeNode(graphe)}[]
-  foret = Kruskal(init, edges)
+  foret = Kruskal(grapheRecouvrement, init)
   return foret
 end
 
 """Récupère la racine du noeud précisé"""
-function getRacine(arbre::AbstractGraph{T}, noeud::AbstractNode{T}) where T
+function getRacine(kruskal::AbstractGraph{T}, noeud::AbstractNode{T}) where T
   enfant = noeud
-  parent = getParent(arbre, noeud)
+  parent = getParent(kruskal, noeud)
   while enfant != parent
     enfant = parent
-    parent = getParent(arbre, parent)
+    parent = getParent(kruskal, parent)
   end
 
   return enfant
@@ -64,15 +66,17 @@ end
 
 
 """Affiche un arbre de recouvrement minimal."""
-function show(arbre::Kruskal)
-  for key in keys(arbre.parents)
+function show(kruskal::Kruskal)
+  for key in keys(kruskal.parents)
     if(!isa(key, Nothing))
       show(key)
     end
   end
 
-  for edge in arbre.edges
+  for edge in kruskal.edges
     show(edge)
   end
-
 end
+
+"""Ajoute l'arête edge à l'arbre de recoubrement kruskal."""
+add_edge!(kruskal::Kruskal, edge::AbstractEdge) = add_edge!(kruskal.arbre, edge)
