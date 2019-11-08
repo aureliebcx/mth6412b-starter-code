@@ -27,7 +27,7 @@ getNode1(edge::AbstractEdge) = edge.node1
 getNode2(edge::AbstractEdge) = edge.node2
 
 """Renvoie les données contenues dans l'arête."""
-weight(edge::AbstractEdge) = edge.weight
+weight(edge::Union{Nothing, AbstractEdge}) = isa(edge, Nothing) ? Inf : edge.weight
 
 """Affiche une arête."""
 function show(edge::AbstractEdge)

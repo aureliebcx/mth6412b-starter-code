@@ -12,35 +12,35 @@ include(joinpath(@__DIR__, "kruskal.jl"))
 function kruskal(graph::AbstractGraph)
   # on crée un objet de type Arbre pour le graphe
   foret = initArbre(graph)
-  poids = 0
   # on crée un tableau avec toutes les arêtes du graphe triées par poids
-  aretes = copy(edges(graph))
+  aretes = copy(getEdges(graph))
   sort!(aretes, by = x -> x.weight)
 
   # pour chaque arête, on regarde si elle coupe un ensemble connexe cad si ses deux noeuds ont une racine différente
   for arete in aretes
-    poids = union!(arete, foret, poids)
+    union!(arete, foret)
   end
-  println(poids)
+
   return foret
 
 end
 
 
-function prim!(graphe::AbstractGraph)
+function prim(graphe::AbstractGraph)
 
-    arbre = initGraphPrim(graphe)
-    file = getQueue(arbre)
+    prim = initGraphPrim(graphe)
+    file = getQueue(prim)
 
     # Définit le premier noeud à utiliser
-    noeudDepart = popfirst!(file)
-    majPoidsNoeud!(arbre, noeudDepart)
+    noeudDepart, edge = popfirst!(file)
+    setFirstNode(prim, noeudDepart)
+    majPoidsNoeud!(prim, noeudDepart)
 
     # Pour chaque noeud de la file de priorité
     while !is_empty(file)
-        node = popfirst!(file)
-        add_edge!(arbre, node)
-        majPoidsNoeud!(arbre, node)
+        node, edge = popfirst!(file)
+        push!(prim, edge)
+        majPoidsNoeud!(prim, node)
     end
-    return arbre
+    return prim
 end

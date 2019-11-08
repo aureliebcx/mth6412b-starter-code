@@ -17,9 +17,6 @@ mutable struct Node{T} <: AbstractNode{T}
   name::Int
   data::T
   rang::Int
-  minWeight::Union{Float64, Int}
-  parent::Union{Nothing, AbstractNode{}}
-  visited::Bool
 end
 
 # on présume que tous les noeuds dérivant d'AbstractNode
@@ -27,11 +24,9 @@ end
 
 """Implémente un noeud avec un rang nul."""
 function Node(name::Int, data::T) where T
-  Node(name, data, 0, Inf, nothing, false)
+  Node(name, data, 0)
 end
 
-"""Renvoie le poids minimal associé au noeud."""
-minWeight(node::AbstractNode) = node.minWeight
 
 """Renvoie le rang du noeud."""
 rang(node::AbstractNode) = node.rang
@@ -45,31 +40,18 @@ data(node::AbstractNode) = node.data
 """Renvoie les données contenues dans un tableau de noeud."""
 data(nodes::Vector{Node{T}}) where T = [data(node) for node in nodes]
 
-"""Renvoie le parent du noeud."""
-getParent(node::AbstractNode) = node.parent
-
-"""Renvoie l'état du noeud."""
-getVisited(node::AbstractNode) = node.visited
-
-"""Modifie l'état du noeud."""
-function setVisited(node::AbstractNode, etat::Bool)
-  node.visited = etat
-end
 
 """Affiche un noeud."""
 function show(node::AbstractNode)
-  if(isa(getParent(node), Nothing))
-    println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node))
-  else
-    println("Node ", name(node), ", data: ", data(node), ", minWeight: ", minWeight(node), ", parent: ", name(getParent(node)))
-  end
+    println("Node ", name(node), ", data: ", data(node))
 end
 
+#=
 """Modifie le poids minimum et le parent associé au noeud."""
 function setWeight(node::AbstractNode, weight::Union{Float64, Int}, parent::Union{AbstractNode, Nothing})
   node.minWeight = weight
   node.parent = parent
-end
+end =#
 
 """Retourne si un noeud est égal à l'autre."""
 isequal(node1::AbstractNode, node2::AbstractNode) = node1.name == node2.name && node1.data == node2.data

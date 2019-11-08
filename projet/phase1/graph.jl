@@ -23,6 +23,9 @@ mutable struct Graph{T} <: AbstractGraph{T}
   edges::Vector{Edge{T}}
 end
 
+"""Initialise un objet de type Graph sans arêtes à partir de graphe."""
+initGraph(graphe::Graph{T}) where T = Graph(name(graphe), getNodes(graphe), Vector{Edge{T}}())
+
 """Ajoute un noeud au graphe."""
 function add_node!(graph::Graph{T}, node::Node{T}) where T
   push!(graph.nodes, node)
@@ -30,7 +33,7 @@ function add_node!(graph::Graph{T}, node::Node{T}) where T
 end
 
 """Ajoute une arête au graphe."""
-function add_edge!(graph::AbstractGraph{T}, edge::Edge{T}) where T
+function add_edge!(graph::Graph{T}, edge::Edge{T}) where T
   push!(graph.edges, edge)
   graph
 end
@@ -45,13 +48,13 @@ typeNode(graph::Graph{T}) where T = T
 name(graph::AbstractGraph) = graph.name
 
 """Renvoie la liste des noeuds du graphe."""
-nodes(graph::Graph) = graph.nodes
+getNodes(graph::Graph) = graph.nodes
 
 """Renvoie le nombre de noeuds du graphe."""
 nb_nodes(graph::Graph) = length(graph.nodes)
 
 """Renvoie la liste des arêtes du graphe."""
-edges(graph::Graph) = graph.edges
+getEdges(graph::AbstractGraph) = graph.edges
 
 """Renvoie le nombre d'arêtes du graphe."""
 nb_edges(graph::AbstractGraph) = length(graph.edges)
@@ -60,4 +63,13 @@ nb_edges(graph::AbstractGraph) = length(graph.edges)
 function show(graph::Graph)
   println("Graph ", name(graph), " has ", nb_nodes(graph), " nodes.")
   println(" and ", nb_edges(graph), "edges.")
+end
+
+"""Renvoie le poids du graphe."""
+function getWeight(graphe::Union{Prim, Kruskal})
+    weight = 0
+    for edge in getEdges(getArbre(graphe))
+        weight = weight + edge.weight
+    end
+    return weight
 end

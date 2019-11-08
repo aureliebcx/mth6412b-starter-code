@@ -5,7 +5,7 @@ include(joinpath(@__DIR__, "..", "phase1", "edge.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "graph.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "read_stsp.jl"))
 include(joinpath(@__DIR__, "..", "phase2", "arbreRecouvrement.jl"))
-include(joinpath(@__DIR__, "..", "phase3", "kruskal.jl"))
+include(joinpath(@__DIR__, "..", "phase3", "main.jl"))
 
 @testset "Node" begin
     node1 = Node(1,2)
@@ -24,6 +24,7 @@ end
     @test getNode2(edge1) == node2
     @test weight(edge1) == 4
     edge2 = Edge(node2, node3, 2)
+    @test weight(nothing) == Inf
 end
 
 @testset "Graph" begin
@@ -37,12 +38,12 @@ end
     @test nb_nodes(graphe) == 2
     @test nb_edges(graphe) == 1
     @test typeNode(graphe) == Int64
-    @test nodes(graphe) == [node1, node2]
-    @test edges(graphe) == [edge1]
+    @test getNodes(graphe) == [node1, node2]
+    @test getEdges(graphe) == [edge1]
     add_node!(graphe,  node3)
-    @test nodes(graphe) == [node1, node2, node3]
+    @test getNodes(graphe) == [node1, node2, node3]
     add_edge!(graphe, edge2)
-    @test edges(graphe) == [edge1, edge2]
+    @test getEdges(graphe) == [edge1, edge2]
 end
 
 
@@ -56,11 +57,10 @@ end
     add_node!(graphe,  node3)
     add_edge!(graphe, edge2)
     foret = initArbre(graphe)
-    @test name(foret) == name(graphe)
     @test getParent(foret, node1) == node1
     @test getParent(foret, node2) == node2
     @test getParent(foret, node3) == node3
-    @test edges(foret) == Edge{Int64}[]
+    @test getEdges(foret) == Edge{Int64}[]
     @test getParent(foret, node1) == node1
     @test getRacine(foret, node1) == node1
     changeParent!(foret, node1, node2)
@@ -90,5 +90,5 @@ end
     @test getRacine(arbre, node3) == node3 || node1
     @test getRacine(arbre, node2)== node3 || node2
     @test getRacine(arbre, node1) == node3 || node1
-    @test edges(arbre) == [edge3, edge2]
+    @test getEdges(arbre) == [edge3, edge2]
 end

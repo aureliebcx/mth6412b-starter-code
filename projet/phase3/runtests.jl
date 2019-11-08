@@ -20,7 +20,8 @@ include(joinpath(@__DIR__, "main.jl"))
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
     edge4 = Edge(node1, node4, 1)
-    arbre = Arbre("test", Dict(node3 => node3, node1 => node4, node2 => node3, node4 => node3), [edge2, edge4, edge1])
+    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge2, edge4])
+    arbre = Kruskal(graphe, Dict(node3 => node3, node1 => node4, node2 => node3, node4 => node3))
     node3.rang = 2
     compression!(arbre, node4, node3)
     @test getParent(arbre, node1) == node3
@@ -42,23 +43,24 @@ end
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node3, node4, 2)
     edge4 = Edge(node1, node4, 1)
-    arbre = Arbre("test", Dict(node3 => node3, node1 => node1, node2 => node2, node4 => node4), [edge2])
+    graphe = Graph("test", [node1, node2, node3, node4], [edge2])
+    kruskal = Kruskal(graphe, Dict(node3 => node3, node1 => node1, node2 => node2, node4 => node4))
 
     # Test si elles ont le même rang
-    poids = union!(edge4, arbre, 0)
-    @test getParent(arbre, node1) == node4
-    @test poids == 1
-    @test edges(arbre) == [edge2, edge4]
+    poids = union!(edge4, kruskal)
+    @test getParent(kruskal, node1) == node4
+    #@test poids == 1
+    @test getEdges(kruskal) == [edge2, edge4]
 
     # Test si racine1 est plus petite que racine2
-    poids = union!(edge3, arbre, poids)
-    @test getParent(arbre, node3) == node4
-    @test poids == 3
+    poids = union!(edge3, kruskal)
+    @test getParent(kruskal, node3) == node4
+    #@test poids == 3
 
     # Test si racine2 est plus petite ou égale que racine1
-    poids = union!(edge1, arbre, poids)
-    @test getParent(arbre, node2) == node4
-    @test poids == 5
+    poids = union!(edge1, kruskal)
+    @test getParent(kruskal, node2) == node4
+    #@test poids == 5
 
 end
 
@@ -74,18 +76,22 @@ end
     node4 = Node(4,1)
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
+    edge3 = Edge(node2, node1, 1)
     edge4 = Edge(node1, node4, 1)
     #ne reconnait pas la fonction PriorityQueue implémentée pour une raison que je ne comprend pas. Je suis donc obligée d'utiliser le constructeur classique.
-    T = Array{Node{Int},1}()
-    File = PriorityQueue(T)
+    File = PriorityQueue(Array{Node{Int},1}(), Array{Union{Nothing, Edge{Int}},1}())
 
+    @test is_empty(File)
     push!(File, node1)
     @test length(File) == 1
-    push!(File, node2)
+    push!(File, node2, edge3)
     @test File.nodes[2] == node2
-    setWeight(node1, 5, node2)
-    @test popfirst!(File) == node1
+    @test getEdges(File) == [nothing,edge3]
+    node, edge = popfirst!(File)
+    @test  node == node2
+    @test edge == edge3
     @test length(File) == 1
+    @test getWeight(File, node1) == Inf
 
 end
 
@@ -103,7 +109,10 @@ end
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node1, node3, 3)
     edge4 = Edge(node1, node4, 1)
-    file = PriorityQueue([node2, node3, node4])
+    File = PriorityQueue(Array{Node{Int},1}(), Array{Union{Nothing, Edge{Int}},1}())
+    push!(File, node2)
+    push!(File, node3)
+    push!(File, node4)
     edges1 = [edge3, edge4]
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
@@ -120,21 +129,25 @@ end
     @test getEdgesOfNode(prim, node1) == [edge3, edge4]
 
     # Il n'y a pas encore d'arêtes dans l'arbre de recouvrement minimal
-    @test length(edges(prim)) == 0
+    @test length(getEdges(prim)) == 0
+    @test getEdge(prim, node1) == nothing
 
     # test majPoidsNoeud!
     file = getNodes(getQueue(prim))
     deleteat!(file, findall(x -> isequal(x, node1), file))
     majPoidsNoeud!(prim, node1)
+    @test minWeight(prim, node3) == 3
+    @test minWeight(prim, node4) == 1
+    @test minWeight(prim, node2) == Inf
 
-    @test minWeight(node3) == 3
-    @test minWeight(node4) == 1
-    @test minWeight(node2) == Inf
-
-    #test add_edge!
-    add_edge!(prim, node3)
-    @test edges(prim) == [edge3]
+    push!(prim, edge3)
+    @test getEdges(prim) == [edge3]
     @test getWeight(prim) == 3
+
+    setFirstNode(prim, node2)
+    @test getFirstNode(prim) == node2
+
+
 
 end
 
@@ -155,18 +168,18 @@ end
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
     # Test de la fonction prim
-    arbre = prim!(graphe)
-    @test getWeight(arbre) == 4
+    graphePrim = prim(graphe)
+    @test getWeight(graphePrim) == 4
 
     # Toutes les arêtes de l'arbre de recouvrement minimal sont présentes.
-    @test length(getEdges(arbre)) == 3
+    @test length(getEdges(graphePrim)) == 3
     t = [edge4, edge1, edge2]
-    for edge in getEdges(arbre)
+    for edge in getEdges(graphePrim)
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
     # Il ne reste plus de noeuds à ajouter.
-    @test is_empty(getQueue(arbre))
+    @test is_empty(getQueue(graphePrim))
 
 end
 
@@ -204,13 +217,13 @@ end
     grapheCours = Graph("cours", nodes, edges)
     grapheKruskal = kruskal(grapheCours)
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
+
     @test length(getEdges(grapheKruskal)) == 8
     for edge in getEdges(grapheKruskal)
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
-
-    graphePrim = prim!(grapheCours)
+    graphePrim = prim(grapheCours)
     @test getWeight(graphePrim) == 37
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(graphePrim)) == 8
