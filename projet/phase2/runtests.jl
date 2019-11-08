@@ -24,6 +24,7 @@ end
     @test getNode2(edge1) == node2
     @test weight(edge1) == 4
     edge2 = Edge(node2, node3, 2)
+    @test weight(nothing) == Inf
 end
 
 @testset "Graph" begin
@@ -37,10 +38,10 @@ end
     @test nb_nodes(graphe) == 2
     @test nb_edges(graphe) == 1
     @test typeNode(graphe) == Int64
-    @test nodes(graphe) == [node1, node2]
+    @test getNodes(graphe) == [node1, node2]
     @test getEdges(graphe) == [edge1]
     add_node!(graphe,  node3)
-    @test nodes(graphe) == [node1, node2, node3]
+    @test getNodes(graphe) == [node1, node2, node3]
     add_edge!(graphe, edge2)
     @test getEdges(graphe) == [edge1, edge2]
 end
@@ -56,7 +57,6 @@ end
     add_node!(graphe,  node3)
     add_edge!(graphe, edge2)
     foret = initArbre(graphe)
-    @test name(foret) == name(graphe)
     @test getParent(foret, node1) == node1
     @test getParent(foret, node2) == node2
     @test getParent(foret, node3) == node3

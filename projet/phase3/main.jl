@@ -29,18 +29,17 @@ end
 function prim(graphe::AbstractGraph)
 
     prim = initGraphPrim(graphe)
-    file = getQueue(arbre)
+    file = getQueue(prim)
 
     # Définit le premier noeud à utiliser
-    noeudDepart = popfirst!(file)
+    noeudDepart, edge = popfirst!(file)
     majPoidsNoeud!(prim, noeudDepart)
 
     # Pour chaque noeud de la file de priorité
     while !is_empty(file)
-        node = popfirst!(file)
-        edge = getEdge(prim, node)
-        push!(arbre, edge)
-        majPoidsNoeud!(arbre, node)
+        node, edge = popfirst!(file)
+        push!(prim, edge)
+        majPoidsNoeud!(prim, node)
     end
-    return arbre
+    return prim
 end

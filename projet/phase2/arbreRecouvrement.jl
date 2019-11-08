@@ -44,7 +44,7 @@ end
 
 """Initialise un objet de type Kruskal pour un graphe"""
 function initArbre(graphe::AbstractGraph{T}) where T
-  init = Dict(node => node for node in nodes(graphe))
+  init = Dict(node => node for node in getNodes(graphe))
   edges = Edge{typeNode(graphe)}[]
   foret = Kruskal(init, edges)
   return foret

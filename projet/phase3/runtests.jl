@@ -74,20 +74,22 @@ end =#
     node4 = Node(4,1)
     edge1 = Edge(node4, node2, 2)
     edge2 = Edge(node2, node3, 1)
+    edge3 = Edge(node2, node1, 1)
     edge4 = Edge(node1, node4, 1)
     #ne reconnait pas la fonction PriorityQueue implémentée pour une raison que je ne comprend pas. Je suis donc obligée d'utiliser le constructeur classique.
-    T = Array{Node{Int},1}()
-    File = PriorityQueue(T, Union{Int, Float64}[])
+    File = PriorityQueue(Array{Node{Int},1}(), Array{Union{Nothing, Edge{Int}},1}())
 
     @test is_empty(File)
     push!(File, node1)
     @test length(File) == 1
-    push!(File, node2, 1)
+    push!(File, node2, edge3)
     @test File.nodes[2] == node2
-    @test getWeight(File) == [Inf,1]
-    @test popfirst!(File) == node2
+    @test getEdges(File) == [nothing,edge3]
+    node, edge = popfirst!(File)
+    @test  node == node2
+    @test edge == edge3
     @test length(File) == 1
-    @test getWeight(File) == [Inf]
+    @test getWeight(File, node1) == Inf
 
 end
 
@@ -105,8 +107,7 @@ end
     edge2 = Edge(node2, node3, 1)
     edge3 = Edge(node1, node3, 3)
     edge4 = Edge(node1, node4, 1)
-    T = Array{Node{Int},1}()
-    File = PriorityQueue(T, Union{Int, Float64}[])
+    File = PriorityQueue(Array{Node{Int},1}(), Array{Union{Nothing, Edge{Int}},1}())
     push!(File, node2)
     push!(File, node3)
     push!(File, node4)
@@ -127,23 +128,24 @@ end
 
     # Il n'y a pas encore d'arêtes dans l'arbre de recouvrement minimal
     @test length(getEdges(prim)) == 0
+    @test getEdge(prim, node1) == nothing
 
     # test majPoidsNoeud!
     file = getNodes(getQueue(prim))
     deleteat!(file, findall(x -> isequal(x, node1), file))
     majPoidsNoeud!(prim, node1)
+    @test minWeight(prim, node3) == 3
+    @test minWeight(prim, node4) == 1
+    @test minWeight(prim, node2) == Inf
 
-    @test minWeight(file, node3) == 3
-    @test minWeight(file, node4) == 1
-    @test minWeight(file, node2) == Inf
-
-    #test add_edge!
-    add_edge!(prim, node3)
-    @test edges(prim) == [edge3]
+    push!(prim, edge3)
+    @test getEdges(prim) == [edge3]
     @test getWeight(prim) == 3
 
+
+
 end
-#=
+
 @testset "prim" begin
     #=
         1----4
@@ -161,21 +163,21 @@ end
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
     # Test de la fonction prim
-    arbre = prim!(graphe)
-    @test getWeight(arbre) == 4
+    graphePrim = prim(graphe)
+    @test getWeight(graphePrim) == 4
 
     # Toutes les arêtes de l'arbre de recouvrement minimal sont présentes.
-    @test length(getEdges(arbre)) == 3
+    @test length(getEdges(graphePrim)) == 3
     t = [edge4, edge1, edge2]
-    for edge in getEdges(arbre)
+    for edge in getEdges(graphePrim)
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
     # Il ne reste plus de noeuds à ajouter.
-    @test is_empty(getQueue(arbre))
+    @test is_empty(getQueue(graphePrim))
 
 end
-
+#=
 @testset "exemple cours" begin
     # Test sur l'arbre vu en cours
     # Construction des noeuds
@@ -224,5 +226,6 @@ end
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
-=#
+
 end
+=#
