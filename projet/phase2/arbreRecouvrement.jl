@@ -1,4 +1,5 @@
 import Base.show
+import Base.push!
 include(joinpath(@__DIR__,"..", "phase1","graph.jl"))
 
 
@@ -11,46 +12,71 @@ Exemple :
     edge2 = Edge(node2, node3, 2)
     edge3 = Edge(node1, node3, 1)
 
-    arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge1, edge2, edge3]
+    arbre = ("Arbre de recouvrement", Dict(node1 => node3, node1 => node2, node2 => node3), [edge2, edge3])
 """
-mutable struct Arbre{T} <: AbstractGraph{T}
-  name::String
-  link::Dict{Node{T}, Node{T}}
-  edges::Vector{Edge{T}}
+mutable struct Kruskal{T} <: AbstractGraph{T}
+  arbre::Graph{T}
+  parents::Dict{Node{T}, Node{T}}
 end
 
-"""Change le parent d'un noeud"""
-function changeParent!(tabParents::Arbre, nodeChild::AbstractNode, nodeFather::AbstractNode)
-  tabParents.link[nodeChild] = nodeFather
+
+"""Change le parent d'un noeud. """
+function changeParent!(tabParents::Kruskal, nodeChild::AbstractNode, nodeFather::AbstractNode)
+  tabParents.parents[nodeChild] = nodeFather
   return tabParents
 end
 
-"""Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
-getParents(graphe::Arbre) = graphe.link
+"""Renvoie les arêtes de l'arbre."""
+getEdges(kruskal::Kruskal) = kruskal.arbre.edges
 
+"""Renvoie les noeuds de l'arbre."""
+getNodes(kruskal::Kruskal) = collect(keys(kruskal.parents))
+
+"""Retourne le dictionnaire contenant les noeuds parents de tous les noeuds"""
+getParents(graphe::Kruskal) = graphe.parents
+
+"""Renvoie l'arbre de recouvrement."""
+getArbre(graphe::Kruskal) = graphe.arbre
 
 """Retourne le parent du noeud donné s'il existe"""
-function getParent(parent::Arbre{T}, noeud::AbstractNode{T}) where T
+function getParent(parent::Kruskal{T}, noeud::AbstractNode{T}) where T
   return get(getParents(parent), noeud, ErrorException("le parent n'existe pas"))
 end
 
 
-"""Initialise un objet de type Arbre pour un graphe"""
+"""Initialise un objet de type Kruskal pour un graphe"""
 function initArbre(graphe::AbstractGraph{T}) where T
-  init = Dict(node => node for node in nodes(graphe))
-  edges = Edge{typeNode(graphe)}[]
-  foret = Arbre(name(graphe), init, edges)
+  grapheRecouvrement = Graph("Spanning Tree", [node for node in getNodes(graphe)], Edge{T}[])
+  init = Dict(node => node for node in getNodes(graphe))
+  foret = Kruskal(grapheRecouvrement, init)
   return foret
 end
 
 """Récupère la racine du noeud précisé"""
-function getRacine(arbre::AbstractGraph{T}, noeud::AbstractNode{T}) where T
+function getRacine(kruskal::AbstractGraph{T}, noeud::AbstractNode{T}) where T
   enfant = noeud
-  parent = getParent(arbre, noeud)
-
+  parent = getParent(kruskal, noeud)
   while enfant != parent
     enfant = parent
-    parent = getParent(arbre, parent)
+    parent = getParent(kruskal, parent)
   end
+
   return enfant
 end
+
+
+"""Affiche un arbre de recouvrement minimal."""
+function show(kruskal::Kruskal)
+  for key in keys(kruskal.parents)
+    if(!isa(key, Nothing))
+      show(key)
+    end
+  end
+
+  for edge in kruskal.edges
+    show(edge)
+  end
+end
+
+"""Ajoute l'arête edge à l'arbre de recoubrement kruskal."""
+add_edge!(kruskal::Kruskal, edge::AbstractEdge) = add_edge!(kruskal.arbre, edge)

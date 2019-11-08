@@ -1,5 +1,5 @@
 import Base.show
-include(joinpath(@__DIR__, "node.jl"))
+include(joinpath(@__DIR__, "..", "phase3", "node.jl"))
 include(joinpath(@__DIR__, "edge.jl"))
 include(joinpath(@__DIR__, "graph.jl"))
 include(joinpath(@__DIR__, "read_stsp.jl"))

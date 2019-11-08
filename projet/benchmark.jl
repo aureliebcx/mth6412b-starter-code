@@ -3,8 +3,6 @@ using Printf
 using Random
 using DataStructures
 
-include(joinpath(@__DIR__, "phase1", "main.jl"))
-include(joinpath(@__DIR__, "phase1", "graphConstruction.jl"))
 include(joinpath(@__DIR__, "phase3", "main.jl"))
 
 # List of stsp instances
@@ -18,6 +16,7 @@ const GRAPHS = [construct_graph(joinpath(STSP_DIR, finst), finst[1:end-4]) for f
 
 Benchmark each function of each graph `N` times.
 """
+
 function benchmark(funcs, graphs, N=16; verbose=false)
     ttot = 0.0
     T = zeros(length(graphs), length(funcs), N)  # Computing times for each graph
@@ -65,6 +64,7 @@ function benchmark(funcs, graphs, N=16; verbose=false)
             @printf "  |  %10s%8.3f (±%8.3f)" "" μ ((2.0 / sqrt(N)) * σ)
         end
         @printf "\n"
+
     end
     return nothing
 end
