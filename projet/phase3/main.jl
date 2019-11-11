@@ -26,13 +26,16 @@ function kruskal(graph::AbstractGraph)
 end
 
 
-function prim(graphe::AbstractGraph)
+function prim(graphe::AbstractGraph, noeudDepart::AbstractNode)
 
     prim = initGraphPrim(graphe)
     file = getQueue(prim)
 
     # Définit le premier noeud à utiliser
-    noeudDepart, edge = popfirst!(file)
+    # noeudDepart, edge = popfirst!(file)
+    index = getIndex(prim, noeudDepart)
+    deleteat!(prim.queue.nodes, index)
+    deleteat!(prim.queue.minWeight, index)
     setFirstNode(prim, noeudDepart)
     majPoidsNoeud!(prim, noeudDepart)
 
@@ -43,4 +46,14 @@ function prim(graphe::AbstractGraph)
         majPoidsNoeud!(prim, node)
     end
     return prim
+end
+
+
+"""Renvoie le poids du graphe."""
+function getWeight(graphe::Union{Prim, Kruskal})
+    weight = 0
+    for edge in getEdges(getArbre(graphe))
+        weight = weight + edge.weight
+    end
+    return weight
 end

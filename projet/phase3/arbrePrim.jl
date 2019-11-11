@@ -57,14 +57,6 @@ getQueue(prim::Prim) = prim.queue
 """Renvoie l'arbre de recouvrement du graphe prim."""
 getArbre(prim::Prim) = prim.arbre
 
-"""Renvoie le poids du graphe."""
-function getWeight(prim::Prim)
-    weight = 0
-    for edge in getEdges(getArbre(prim))
-        weight = weight + edge.weight
-    end
-    return weight
-end
 
 """Ajoute noeud au graphe arbre de type Prim par l'arête associée."""
 push!(prim::Prim{T}, edge::AbstractEdge{T}) where T = push!(prim.arbre.edges, edge)
@@ -111,6 +103,6 @@ getIndex(prim::Prim, node::AbstractNode) = findfirst(x -> x == node, prim.queue.
 getFirstNode(prim::Prim) = prim.firstNode
 
 """Met à jour le noeud de départ."""
-function setFirstNode(prim::Prim, node::AbstractNode) 
+function setFirstNode(prim::Prim, node::AbstractNode)
     prim.firstNode = node
 end
