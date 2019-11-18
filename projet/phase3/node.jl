@@ -46,12 +46,5 @@ function show(node::AbstractNode)
     println("Node ", name(node), ", data: ", data(node))
 end
 
-#=
-"""Modifie le poids minimum et le parent associé au noeud."""
-function setWeight(node::AbstractNode, weight::Union{Float64, Int}, parent::Union{AbstractNode, Nothing})
-  node.minWeight = weight
-  node.parent = parent
-end =#
-
 """Retourne si un noeud est égal à l'autre."""
 isequal(node1::AbstractNode, node2::AbstractNode) = node1.name == node2.name && node1.data == node2.data

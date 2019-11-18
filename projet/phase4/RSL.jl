@@ -2,17 +2,13 @@ include(joinpath(@__DIR__, "..", "phase3", "main.jl"))
 include(joinpath(@__DIR__, "..", "phase1", "graph.jl"))
 include(joinpath(@__DIR__, "..", "phase4", "tournee.jl"))
 
+"""Crée une tournée à partir d'arbre représentant un arbre de recouvrement minimal."""
+function RSL(arbre::AbstractGraph{T}, racine::AbstractNode) where T
+    # Etape 1 : vréation d'un objet de type Tournee avec Prim
+    rsl = initTournee(arbre, racine)
 
-function RSL(graphe::AbstractGraph{T}, racine::AbstractNode) where T
-    # Etape 1 : choix d'une racine
-     # pour l'instant l'algo de Prim la choisit automatiquement
-
-    # Etape 2 : Arbre de recouvrement minimal et objet de type RSL
-    rsl = initRSL(graphe, racine)
-
-    # Etape 3 : Parcours en pré-ordre
-    # parcours!(rsl)
-    parcours_pre!(rsl, racine)
+    # Etape 2 : Construction de la tournée
+    parcours!(rsl, racine)
 
     return rsl
 end
@@ -23,19 +19,18 @@ function find_edge(node1::Node{T}, node2::Node{T}, edges::Vector{Edge{T}}) where
     return edges[index]
 end
 
-"""Parcourt l'arbre de recouvrement minimal dans l'ordre de visite."""
-function parcours!(graphe::Rsl)
-    # Réinitialisation du graphe
-    for node in getNodes(graphe)
-        setVisited(graphe, node, false)
-    end
-
+"""Parcourt l'arbre de recouvrement minimal dans l'ordre de visite (ordre des arêtes ajoutées dans l'attribut edges de arbre de graphe) pour former un tour."""
+function parcours!(graphe::Tournee, racine::Node)
+    # Pour l'instant, l'argument racine n'est pas utilisé
     # Point de départ
     noeudDepart = getFirstNode(getArbre(graphe))
     setVisited(graphe, noeudDepart, true)
+
+    # Paramètres utiles
     edgesArbre = getEdges(getArbre(graphe))
     edgesGraphe = getEdges(graphe)
-    # Parcourt les arêtes les unes après les autres dans l'ordre de construction de Prim
+
+    # Parcourt les arêtes de l'arbre les unes après les autres dans l'ordre de construction de Prim
     noeudCourant = noeudDepart
     for areteCourante in edgesArbre
         noeudPrecedent = noeudCourant
@@ -49,14 +44,13 @@ function parcours!(graphe::Rsl)
 
     end
     # On ajoute la derniere arête pour revenir au point de départ
-
     add_edge!(graphe, find_edge(noeudCourant, noeudDepart, edgesGraphe))
     return graphe
 
 end
 
 """Retourne un ordre de parcours d'un graphe en préordre."""
-function parcours_pre!(graphe::Rsl{T}, racine::AbstractNode) where T
+function parcours_pre!(graphe::Tournee{T}, racine::AbstractNode) where T
     # Réinitialisation du graphe
     for node in getNodes(graphe)
         setVisited(graphe, node, false)
@@ -93,6 +87,6 @@ function parcours_pre!(graphe::Rsl{T}, racine::AbstractNode) where T
         noeudPrecedent = noeudCourant
     end
 
-    return ordre
+    return graphe
 
 end

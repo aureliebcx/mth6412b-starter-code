@@ -34,8 +34,8 @@ function prim(graphe::AbstractGraph, noeudDepart::AbstractNode)
     # Définit le premier noeud à utiliser
     # noeudDepart, edge = popfirst!(file)
     index = getIndex(prim, noeudDepart)
-    deleteat!(prim.queue.nodes, index)
-    deleteat!(prim.queue.minWeight, index)
+    deleteat!(file.nodes, index)
+    deleteat!(file.minWeight, index)
     setFirstNode(prim, noeudDepart)
     majPoidsNoeud!(prim, noeudDepart)
 
