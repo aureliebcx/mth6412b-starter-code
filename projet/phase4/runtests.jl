@@ -44,6 +44,8 @@ include(joinpath(@__DIR__, "..", "phase1", "read_stsp.jl"))
     @test edges_min!([edge1, edge2, edge3]) == (edge2, edge1)
     @test gradient(Graph("test", [node1, node2, node3, node4], [edge1, edge2, edge3]), node1) == -1
     @test gradient(Graph("test", [node1, node2, node3, node4], [edge1, edge2, edge3]), node2) == 1
+
+    getRealWeight(graphe, [edge1, edge3, edge2, edge4])
 end
 
 
@@ -71,7 +73,7 @@ end
         3----2
     =#
 
-    graphePrim = initTournee(graphe, node1)
+    graphePrim = initTournee(graphe, node1, true)
     @test getArbre(graphePrim) == graphePrim.arbre
     @test getEdges(graphePrim) == graphe.edges
     @test length(getNodes(graphePrim)) == 4
@@ -91,8 +93,8 @@ end
 
 end
 
-#=
-@testset "parcours pré-ordre" begin
+
+@testset "RSL" begin
 
     #= graphe
         1----4
@@ -109,7 +111,7 @@ end
     edge4 = Edge(node1, node4, 1)
     edge5 = Edge(node1, node2, 5)
     edge6 = Edge(node3, node4, 5)
-    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
+    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4, edge5, edge6])
 
     #= arbre
         1----4
@@ -117,62 +119,22 @@ end
         3----2
     =#
 
-    graphePrim = prim(graphe)
+    tournee = initTournee(graphe, node1, true)
+    ordre1 = parcours_pre!(tournee, node1)
+    @test getEdges(getTournee(ordre1)) ==  [edge4, edge1, edge2, edge3]
 
-    ordre1 = parcours_pre(graphePrim, node1)
-    @test ordre1 ==  [node1, node4, node2, node3, node1]
-
-    ordre2 = parcours_pre(graphePrim, node2)
-    @test ordre2 == [node2, node3, node4, node1, node2] ||  [node2, node4, node1, node3, node2]
-
-end
-
-
-@testset "RSL" begin
-    #= graphe
-        1-----4
-        |  X  |
-        3-----2
-    =#
-    node1 = Node(1,[1,2])
-    node2 = Node(2,[2,1])
-    node3 = Node(3,[1,1])
-    node4 = Node(4,[2,2])
-    edge1 = Edge(node4, node2, 2)
-    edge2 = Edge(node2, node3, 1)
-    edge3 = Edge(node1, node3, 3)
-    edge4 = Edge(node1, node4, 1)
-    edge5 = Edge(node1, node2, 5)
-    edge6 = Edge(node3, node4, 5)
-    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4, edge5, edge6])
-
-    rsl_1 = RSL(graphe, node1)
-    #=
-    println("le noeud de départ est : ", rsl_1.arbre.firstNode)
-    for edge in getEdges(getArbre(rsl_1))
-        show(edge)
-    end
-    println("les arêtes de la tournée : ")
-    for edge in  getEdges(getTournee(rsl_1))
-        show(edge)
-    end =#
-    @test length(getEdges(getTournee(rsl_1))) == 4
-    noeudDepart = getFirstNode(getArbre(rsl_1))
-    #plot_tournee(getNodes(graphe), getEdges(getTournee(rsl_1)))
-    rsl_2 = RSL(graphe, node2)
-    # @test getEdges(getTournee(rsl_2)) == ([edge2, edge6, edge4, edge5] || [edge1, edge4, edge3, edge2])
-    #plot_tournee(getNodes(graphe), getEdges(getTournee(rsl_2)))
+    tournee = initTournee(graphe, node1, true)
+    ordre2 = parcours_pre!(tournee, node2)
+    @test (getEdges(getTournee(ordre2)) == [edge2, edge6, edge4, edge5]) || getEdges(getTournee(ordre2)) == [edge1, edge4, edge3, edge2]
 
 end
-
 
 
 @testset " test stsp" begin
-    name = "brazil58.tsp"
+    name = "bayg29.tsp"
     grapheCours = construct_graph(name, "test")
 
-
-    rsl = RSL(grapheCours, getNodes(grapheCours)[3])
+    rsl = RSL(grapheCours, getNodes(grapheCours)[7], false)
     @test length(getEdges(getTournee(rsl))) == length(getNodes(grapheCours))
     # plot_tournee(getNodes(getArbre(rsl)), getEdges(getArbre(rsl)))
     # plot_tournee(getNodes(rsl), getEdges(getTournee(rsl)))
@@ -180,7 +142,7 @@ end
 
 end
 
-=#
+
 @testset "HK.jl" begin
 
     #= graphe
@@ -189,25 +151,33 @@ end
         3-----2
     =#
 
-    node1 = Node(1,[1,2])
+    node1 = Node(1,[1,1])
     node2 = Node(2,[2,1])
-    node3 = Node(3,[1,1])
-    node4 = Node(4,[2,2])
-    edge1 = Edge(node4, node2, 2)
-    edge2 = Edge(node2, node3, 1)
-    edge3 = Edge(node1, node3, 3)
-    edge4 = Edge(node1, node4, 1)
-    edge5 = Edge(node1, node2, 5)
-    edge6 = Edge(node3, node4, 5)
-    graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge2, edge3, edge4, edge5, edge6])
+    node3 = Node(3,[1,2])
+    node4 = Node(4,[2,3])
+    node5 = Node(5,[3,2])
+    edge1 = Edge(node4, node2, 20)
+    edge2 = Edge(node2, node3, 14)
+    edge3 = Edge(node1, node3, 10)
+    edge4 = Edge(node1, node4, 22)
+    edge5 = Edge(node1, node2, 10)
+    edge7 = Edge(node1, node5, 22)
+    edge6 = Edge(node3, node4, 14)
+    edge8 = Edge(node2, node5, 14)
+    edge9 = Edge(node4, node5, 14)
+    edge10 = Edge(node3, node5, 20)
+    graphe = Graph("test", [node1, node2, node3, node4, node5], [edge1, edge2, edge3, edge4, edge5, edge6, edge7, edge8, edge9, edge10])
 
-    #tournee = HK(graphe, 2, 1)
-    # plot_tournee(getNodes(tournee), getEdges(getTournee(tournee)))
-     graphe = construct_graph("pa561.tsp", "test")
-     hk = HK(graphe, 1, 1)
-     @test length(hk.tournee.edges) == length(getNodes(hk)) + 1
-     println(getWeight(hk))
+    #= tournee = HK(graphe, 50, 1)
+    @test length(getNodes(tournee)) == 4 # un noeud de moins car l'arbre de recouvrement de tournee n'a pas la racine choisie par l'utilisateur
+    @test length(collect(keys(tournee.visited))) == 5
+    println(getWeight(tournee))
+    plot_tournee(getNodes(getTournee(tournee)), getEdges(getTournee(tournee))) =#
+    #= graphe = construct_graph("brazil58.tsp", "test")
+     hk = HK(graphe, 100, 5)
+     @test length(hk.tournee.edges) == length(getNodes(hk)) + 1 =#
     # plot_tournee(getNodes(hk), getEdges(getTournee(hk)))
+
 
 
 end

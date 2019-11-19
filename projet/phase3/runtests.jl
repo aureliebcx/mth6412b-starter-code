@@ -235,6 +235,6 @@ end
     grapheSTSP = construct_graph(name, "test")
     graphePrim_1 = prim(grapheSTSP, grapheSTSP.nodes[1])
     grapheKruskal = kruskal(grapheSTSP)
-    @test getWeight(grapheKruskal) = getWeight(graphePrim_1)
+    @test getWeight(grapheKruskal) == getWeight(graphePrim_1)
 
 end

@@ -7,7 +7,7 @@ abstract type AbstractTournee{T} end
 """Type représentant une tournée pour un graphe."""
 
 mutable struct Tournee{T} <: AbstractTournee{T}
-  arbre::Prim{T}
+  arbre::Union{Prim{T}, Kruskal{T}}
   edgesGraphe::Vector{Edge{T}}
   visited::Dict{Node{T}, Bool}
   tournee::Graph{T}
@@ -35,8 +35,8 @@ getNodes(graphe::Tournee) = getNodes(getArbre(graphe))
 getVisited(graphe::Tournee, node::AbstractNode) = graphe.visited[node]
 
 """Initialise un Tournee à partir d'un graphe."""
-function initTournee(graphe::AbstractGraph{T}, racine::AbstractNode{T}) where T
-  arbre = prim(graphe, racine)
+function initTournee(graphe::AbstractGraph{T}, racine::AbstractNode{T}, use_prim::Bool) where T
+  use_prim ? (arbre = prim(graphe, racine)) : (arbre = kruskal(graphe))
   edgesGraphe = getEdges(graphe)
   visited =  Dict(node => false for node in getNodes(graphe))
   tournee = Graph(name(graphe), [node for node in getNodes(graphe)], Edge{T}[])
@@ -51,3 +51,6 @@ add_edge!(graphe::AbstractTournee{T}, edge::Edge{T}) where T = add_edge!(getTour
 
 """Ajoute une arête au début de la tournée."""
 pushfirst!(graphe::AbstractTournee{T}, edge::Edge{T}) where T = pushfirst!(getEdges(getTournee(graphe)), edge)
+
+"""Ajoute un noeud à la tournée."""
+push!(graphe::AbstractTournee{T}, node::AbstractNode{T}) where T = push!(getNodes(getTournee(graphe)), node)
