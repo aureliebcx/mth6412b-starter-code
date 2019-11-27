@@ -15,6 +15,8 @@ Stack{T}() where T = Stack(Node{T}[])
 """Insère un élément item dans la pile stack."""
 push!(stack::Stack, item::Node)= pushfirst!(stack.nodes, item)
 
+popfirst!(stack::Stack) = popfirst!(stack.nodes)
+
 
 """File de priorité."""
 mutable struct PriorityQueue{T} <: AbstractQueue{T}

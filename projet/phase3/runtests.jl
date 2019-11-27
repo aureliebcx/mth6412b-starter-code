@@ -168,7 +168,7 @@ end
     graphe = Graph("test", [node1, node2, node3, node4], [edge1, edge3, edge2, edge4])
 
     # Test de la fonction prim
-    graphePrim = prim(graphe)
+    graphePrim = prim(graphe, graphe.nodes[1])
     @test getWeight(graphePrim) == 4
 
     # Toutes les arêtes de l'arbre de recouvrement minimal sont présentes.
@@ -223,7 +223,7 @@ end
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
-    graphePrim = prim(grapheCours)
+    graphePrim = prim(grapheCours, grapheCours.nodes[1])
     @test getWeight(graphePrim) == 37
     t = [edge1, edge2, edge3, edge5, edge6, edge7, edge8, edge12, edge14]
     @test length(getEdges(graphePrim)) == 8
@@ -231,5 +231,10 @@ end
         @test !isa(findall(x -> x == edge, t), Nothing)
     end
 
+    name = "brg180.tsp"
+    grapheSTSP = construct_graph(name, "test")
+    graphePrim_1 = prim(grapheSTSP, grapheSTSP.nodes[1])
+    grapheKruskal = kruskal(grapheSTSP)
+    @test getWeight(grapheKruskal) == getWeight(graphePrim_1)
 
 end

@@ -1,4 +1,5 @@
 import Base.show
+import Base.pushfirst!
 
 """Type représentant un arbre de recouvrement minimal donné par l'algo de Prim.
 Exemple :
@@ -38,7 +39,7 @@ function initGraphPrim(graphe::AbstractGraph{T}) where T
     for node in collect(keys(dic))
         push!(file, node)
     end
-    prim = Prim(arbre, file, dic,nothing)
+    prim = Prim(arbre, file, dic, nothing)
     return prim
 end
 
@@ -57,17 +58,12 @@ getQueue(prim::Prim) = prim.queue
 """Renvoie l'arbre de recouvrement du graphe prim."""
 getArbre(prim::Prim) = prim.arbre
 
-"""Renvoie le poids du graphe."""
-function getWeight(prim::Prim)
-    weight = 0
-    for edge in getEdges(getArbre(prim))
-        weight = weight + edge.weight
-    end
-    return weight
-end
 
-"""Ajoute noeud au graphe arbre de type Prim par l'arête associée."""
+"""Ajoute à l'arbre de type Prim l'arête edge."""
 push!(prim::Prim{T}, edge::AbstractEdge{T}) where T = push!(prim.arbre.edges, edge)
+
+"""Ajoute edge en premier dans le tableau d'arêtes de l'arbre de recouvrement de prim."""
+pushfirst!(prim::Prim{T}, edge::AbstractEdge{T}) where T = pushfirst!(prim.arbre.edges, edge)
 
 """Affiche un arbre de recouvrement."""
 function show(prim::Prim)
@@ -111,6 +107,11 @@ getIndex(prim::Prim, node::AbstractNode) = findfirst(x -> x == node, prim.queue.
 getFirstNode(prim::Prim) = prim.firstNode
 
 """Met à jour le noeud de départ."""
-function setFirstNode(prim::Prim, node::AbstractNode) 
+function setFirstNode(prim::Prim, node::AbstractNode)
     prim.firstNode = node
+end
+
+"""Ajoute node au dictionnaire de prim."""
+function add_node!(prim::Prim{T}, node::AbstractNode{T}, edges::Vector{Edge{T}}) where T
+    prim.nodes[node] = edges
 end

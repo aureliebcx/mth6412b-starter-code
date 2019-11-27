@@ -1,5 +1,6 @@
 import Base.show
 import Base.isequal
+import Base.isless
 
 """Type abstrait dont d'autres types d'arêtes dériveront."""
 abstract type AbstractEdge{T} end
@@ -29,6 +30,11 @@ getNode2(edge::AbstractEdge) = edge.node2
 """Renvoie les données contenues dans l'arête."""
 weight(edge::Union{Nothing, AbstractEdge}) = isa(edge, Nothing) ? Inf : edge.weight
 
+"""Modifie le poids de l'arête."""
+function setWeight(edge::AbstractEdge, weight::Int) 
+  edge.weight = weight
+end
+
 """Affiche une arête."""
 function show(edge::AbstractEdge)
   println("Edge from ", name(getNode1(edge)), " to ", name(getNode2(edge)), ", weighting ", weight(edge), ".")
@@ -38,3 +44,6 @@ function isequal(edge1::AbstractEdge, edge2::AbstractEdge)
   isequal(getNode1(edge1),getNode1(edge2)) && isequal(getNode2(edge1),getNode2(edge2)) && return true
   return false
 end
+
+"""Retourne true si le poids d'edge1 est inférieur au poids d'edge2."""
+isless(edge1::AbstractEdge, edge2::AbstractEdge) = weight(edge1) < weight(edge2)

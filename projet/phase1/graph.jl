@@ -66,10 +66,19 @@ function show(graph::Graph)
 end
 
 """Renvoie le poids du graphe."""
-function getWeight(graphe::Union{Prim, Kruskal})
-    weight = 0
-    for edge in getEdges(getArbre(graphe))
-        weight = weight + edge.weight
+function getWeight(graphe::Graph)
+    w = 0
+    for edge in getEdges(graphe)
+        w += edge.weight
     end
-    return weight
+    return w
+end
+
+
+"""Supprime node et les arêtes incluant node dans graphe."""
+function delete_node!(graphe::Graph, node::AbstractNode)
+  index_nodes = findfirst( x -> isequal(x, node), graphe.nodes)
+  deleteat!(graphe.nodes, index_nodes)
+  index_edges = findall(x -> isequal(x.node1, node) || isequal(x.node2, node), graphe.edges)
+  deleteat!(graphe.edges, index_edges)
 end
