@@ -15,7 +15,7 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
     t = 1
     k = 0
     W = 0
-    sum = 0
+    s = 0
 
 
 
@@ -36,8 +36,17 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
     lastNode = isequal(getNode1(edge2), racine) ? getNode2(edge2) : getNode1(edge2)
     index_lastNode = findfirst(x -> isequal(lastNode, x), nodes_graphe)
 
+
     while( k < iteration && d != zeros(n))
         k += 1
+        s = 0
+        edge1, edge2 = edges_min!(edges_racine)
+        # racine pour construire Prim devient l'extremité de la première arête
+        racine_prim = isequal(getNode1(edge1), racine) ? getNode2(edge1) : getNode1(edge1)
+        index_racine_prim = findfirst(x -> isequal(racine_prim, x), nodes_graphe)
+        lastNode = isequal(getNode1(edge2), racine) ? getNode2(edge2) : getNode1(edge2)
+        index_lastNode = findfirst(x -> isequal(lastNode, x), nodes_graphe)
+
         # construction de l'arbre minimum de recouvrement
         mst = prim(Graph("1-arbre", nodes_mst, edges_mst), racine_prim)
     # Calcul des nouveaux poids des arêtes
@@ -51,12 +60,12 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
         d[index_lastNode] += 1
         # Gradient de la racine
         d[index_racine] = 0
-        t = 1/sqrt(k)
+        t = 1/k
         pi = pi + d*t
         for i in 1:n
-            sum += pi[i] * d[i]
+            s += pi[i] * d[i]
         end
-        L = getRealWeight(arbre, edges_true_weight) + 2 * sum
+        L = getWeight(arbre) - 2 * sum(pi[i] for i in 1:n) + 2 * s
         W = max(L, W)
 
         for edge in edges_mst
@@ -98,21 +107,11 @@ function edges_min!(edges::Vector{Edge{T}}) where T
         deleteat!(edges, index1)
     end
     edge2, index2 = findmin(edges)
+    push!(edges, edge1)
     return edge1, edge2
 end
 
 """Calcule le  gradient de node dans graphe."""
 function gradient(graphe::Graph{T}, node::AbstractNode{T}) where T
     gradient = length(findall(x -> isequal(x.node1, node) || isequal(x.node2, node), getEdges(graphe))) - 2
-end
-
-"""Calcule le vrai poids de l'arbre de recouvrement minimum."""
-function getRealWeight(arbre::Graph{T}, edges::Vector{Edge{T}}) where T
-    weight = 0
-    for edge in getEdges(arbre)
-        # on va chercher le vrai poids de l'arête
-        index = findfirst(x -> isequal(x, edge), edges)
-        weight = weight + edges[index].weight
-    end
-    return weight
 end

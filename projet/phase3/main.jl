@@ -51,9 +51,9 @@ end
 
 """Renvoie le poids du graphe."""
 function getWeight(graphe::Union{Prim, Kruskal})
-    weight = 0
+    w = 0
     for edge in getEdges(getArbre(graphe))
-        weight = weight + edge.weight
+        w += edge.weight
     end
-    return weight
+    return w
 end

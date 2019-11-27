@@ -67,11 +67,11 @@ end
 
 """Renvoie le poids du graphe."""
 function getWeight(graphe::Graph)
-    weight = 0
+    w = 0
     for edge in getEdges(graphe)
-        weight = weight + edge.weight
+        w += edge.weight
     end
-    return weight
+    return w
 end
 
 
