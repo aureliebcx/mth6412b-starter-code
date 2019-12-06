@@ -60,7 +60,7 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
         d[index_lastNode] += 1
         # Gradient de la racine
         d[index_racine] = 0
-        t = 1/k
+        t = 1
         pi = pi + d*t
         for i in 1:n
             s += pi[i] * d[i]
@@ -85,7 +85,6 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
     parcours_pre!(tournee, racine_prim)
 
     # Ajout du noeud racine
-    push!(tournee, racine)
     # Ajout des deux arêtes reliant le mst à la racine pour former le 1-arbre
     pushfirst!(tournee, edge1)
     # Enlève la dernière arête de la tournee et on la remplace par l'arête revenant à la racine du 1-arbre
