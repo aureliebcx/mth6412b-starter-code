@@ -67,7 +67,6 @@ function formation_tournee(graphe::AbstractTournee{T}) where T
         nodeFrom = nodeTo
         push!(indexTournee, data(nodeTo))
         nodeTo = isequal(getNode1(edge), nodeFrom) ? getNode2(edge) : getNode1(edge)
-        println(data(nodeTo))
 
     end
 
