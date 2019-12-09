@@ -17,7 +17,7 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
     W = 0
     s = 0
 
-
+    println(n)
 
     # Construction du tableau de noeud et d'arêtes pour la construction de l'arbre de recouvrement minimal
     nodes_mst = copy(nodes_graphe)
@@ -60,7 +60,7 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
         d[index_lastNode] += 1
         # Gradient de la racine
         d[index_racine] = 0
-        t = 1/k
+        t = 1/sqrt(k)
         pi = pi + d*t
         for i in 1:n
             s += pi[i] * d[i]
@@ -75,7 +75,7 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
 
     end
     println("HK réalisé en ", k, " itérations.")
-    println( "la borne maximum trouvée est ", W)
+    println( "la borne trouvée par HK est ", W)
 
     # Construction de la tournée avec l'ordre obtenu par HK
     # Initialisation et construction de l'objet de type Tournee
@@ -84,8 +84,6 @@ function HK(graphe_input::AbstractGraph{T}, iteration::Int, index_racine::Int) w
     tournee = Tournee(mst, edges_true_weight, visited, initTour)
     parcours_pre!(tournee, racine_prim)
 
-    # Ajout du noeud racine
-    push!(tournee, racine)
     # Ajout des deux arêtes reliant le mst à la racine pour former le 1-arbre
     pushfirst!(tournee, edge1)
     # Enlève la dernière arête de la tournee et on la remplace par l'arête revenant à la racine du 1-arbre
