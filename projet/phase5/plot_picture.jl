@@ -52,16 +52,17 @@ function plot_picture(picture_name::String, use_HK::Bool, nb_it::Int, index_raci
 
 end
 
-
+"""Renvoie un tableau contenant les datas des noeuds dans l'ordre de la tournée."""
 function formation_tournee(graphe::AbstractTournee{T}) where T
     tournee = getTournee(graphe)
     edges = copy(getEdges(tournee))
-    println(length(edges))
     indexTournee = T[]
     # On va chercher le noeud 0
     nodeFrom = Node(0,0)
     push!(indexTournee, data(nodeFrom))
     nodeTo = nodeFrom
+
+    # tant qu'il reste des arêtes, on cherche le noeud suivant
     while length(edges) != 0
         nodeFrom = nodeTo
         indexTo = findfirst(x -> isequal(getNode1(x), nodeFrom) || isequal(getNode2(x), nodeFrom), edges)
@@ -69,22 +70,7 @@ function formation_tournee(graphe::AbstractTournee{T}) where T
         deleteat!(edges, indexTo)
         push!(indexTournee, data(nodeTo))
     end
+
     deleteat!(indexTournee, length(indexTournee))
-    return indexTournee
-
-
-
-    #=
-    nodeTo = isequal(getNode1(edges[1]), Node(0,0)) ? getNode1(edges[1]) : getNode2(edges[1])
-    nodeFrom = getNode1(edges[1])
-
-    # pour toutes les arêtes on
-    for edge in edges
-        nodeFrom = nodeTo
-        push!(indexTournee, data(nodeTo))
-        nodeTo = isequal(getNode1(edge), nodeFrom) ? getNode2(edge) : getNode1(edge)
-
-    end
-    =#
     return indexTournee
 end
