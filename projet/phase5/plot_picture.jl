@@ -48,7 +48,6 @@ function plot_picture(picture_name::String, use_HK::Bool, nb_it::Int, index_raci
     reconstructed_path = joinpath("plot", "images", save_name*".png")
     #tour_path = joinpath(@__DIR__, "..", "..", "shredder", "shredder-julia", "tsp", "tours",save_name)
     write_tour(tour_path, index_tournee, convert(Float32, weightTournee))
-
     reconstruct_picture(tour_path, image_path, reconstructed_path)
 
 end
