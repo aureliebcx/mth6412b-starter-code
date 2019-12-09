@@ -173,6 +173,7 @@ end
     @test length(collect(keys(tournee.visited))) == 5
     println(getWeight(tournee))
     plot_tournee(getNodes(getTournee(tournee)), getEdges(getTournee(tournee))) =#
+    
     graphe = construct_graph("bayg29.tsp", "test")
      hk = HK(graphe, 1000, 3)
      @test length(hk.tournee.edges) == length(getNodes(hk)) + 1
